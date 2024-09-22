@@ -14,9 +14,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             CategorySeeder::class, // Kategórie
-            ProductSeeder::class, // Produkty
             ColorSeeder::class, // Farby
             SizeSeeder::class, // Veľkosti
+            ProductSeeder::class, // Produkty
         ]);
     }
 }

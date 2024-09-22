@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use Illuminate\Database\Seeder;
 use App\Models\Product;
 
@@ -9,6 +10,7 @@ class ProductSeeder extends Seeder
 {
     public function run()
     {
-        Product::factory()->count(50)->create(); // Vytvor 50 produktov
+        // Vytvoríme 50 hlavných produktov
+        Product::factory()->count(100)->create();
     }
 }

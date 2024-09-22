@@ -9,13 +9,15 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // Názov produktu
-            $table->text('description'); // Popis produktu
-            $table->decimal('price', 10, 2); // Cena produktu
-            $table->foreignId('category_id')->constrained()->onDelete('cascade'); // Cudzí kľúč na kategóriu
-            $table->string('sku')->unique(); // Jedinečný identifikátor produktu
-            $table->string('size')->nullable(); // Pridanie stĺpca pre veľkosť
-            $table->string('color')->nullable(); // Pridanie stĺpca pre farbu
+            $table->string('name');
+            $table->text('description');
+            $table->decimal('price', 10, 2);
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->string('sku')->unique();
+            $table->foreignId('size_id')->nullable()->onDelete('cascade');
+            $table->foreignId('color_id')->nullable()->onDelete('cascade');
+            $table->bigInteger('master_id')->nullable();
+            $table->integer('stock')->default(0);
             $table->timestamps();
         });
     }

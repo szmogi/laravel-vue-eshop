@@ -23,6 +23,7 @@ class ProductsController extends Controller
             'sku' => 'required|string|unique:products',
             'size_id' => 'nullable|exists:sizes,id',
             'color_id' => 'nullable|exists:colors,id',
+            'master_id' => 'nullable|exists:products,id',
         ]);
 
         $product = Product::create($validated);
@@ -50,11 +51,19 @@ class ProductsController extends Controller
             'sku' => 'sometimes|string|unique:products,sku,' . $id,
             'size_id' => 'nullable|exists:sizes,id',
             'color_id' => 'nullable|exists:colors,id',
+            'master_id' => 'nullable|exists:products,id',
         ]);
 
         $product->update($validated);
 
         return response()->json($product);
+    }
+
+    // Získaj varianty produktu
+    public function variants($id)
+    {
+        $product = Product::findOrFail($id);
+        return response()->json($product->variants);
     }
 
     // Zmaž produkt

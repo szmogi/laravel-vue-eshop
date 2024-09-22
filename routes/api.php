@@ -63,3 +63,9 @@ Route::apiResource('orders', OrdersController::class);
    DELETE /order-items/{id} - zmaže podrobnosť objednávky
  */
 Route::apiResource('order-items', OrderItemsController::class);
+
+// Varianty produktu
+/*
+ * GET /products/{id}/variants - získa varianty produktu
+ */
+Route::get('products/{id}/variants', [ProductsController::class, 'variants']);

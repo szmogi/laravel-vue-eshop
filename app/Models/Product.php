@@ -34,7 +34,6 @@ class Product extends Model
         return $this->belongsTo(Size::class);
     }
 
-
     // Vytvor nový produkt
     public static function createProduct($data)
     {
@@ -51,5 +50,15 @@ class Product extends Model
     public function deleteProduct()
     {
         $this->delete();
+    }
+
+    public function masterProduct()
+    {
+        return $this->belongsTo(Product::class, 'master_id');
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(Product::class, 'master_id');
     }
 }
