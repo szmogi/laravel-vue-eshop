@@ -15,7 +15,19 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Poppins', 'sans-serif'], // Môžete zmeniť na akékoľvek písmo
+            },
+            colors: {
+                ecoGreen: {
+                    light: '#6CA36C', // svetlá zelená
+                    DEFAULT: '#4F8F4F', // základná zelená
+                    dark: '#2D5E2D', // tmavá zelená
+                },
+                ecoGray: {
+                    light: '#E0E0E0', // svetlá sivá
+                    DEFAULT: '#4F4F4F', // základná sivá
+                    dark: '#333333', // tmavá sivá
+                },
             },
         },
     },

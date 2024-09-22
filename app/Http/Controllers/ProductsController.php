@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Product;
@@ -10,7 +9,7 @@ class ProductsController extends Controller
     // Získaj všetky produkty
     public function index()
     {
-        return Product::with('category')->get();
+        return Product::with(['category', 'color', 'size'])->get();
     }
 
     // Vytvor nový produkt
@@ -22,38 +21,49 @@ class ProductsController extends Controller
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
             'sku' => 'required|string|unique:products',
+            'size_id' => 'nullable|exists:sizes,id',
+            'color_id' => 'nullable|exists:colors,id',
         ]);
 
-        return Product::createProduct($validated);
+        $product = Product::create($validated);
+
+        return response()->json($product, 201);
     }
 
     // Získaj konkrétny produkt
     public function show($id)
     {
-        return Product::with('category')->findOrFail($id);
+        $product = Product::with(['category', 'color', 'size'])->findOrFail($id);
+        return response()->json($product);
     }
 
     // Aktualizuj existujúci produkt
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
             'price' => 'sometimes|numeric',
             'category_id' => 'sometimes|exists:categories,id',
             'sku' => 'sometimes|string|unique:products,sku,' . $id,
+            'size_id' => 'nullable|exists:sizes,id',
+            'color_id' => 'nullable|exists:colors,id',
         ]);
 
-        $product->updateProduct($validated);
-        return $product;
+        $product->update($validated);
+
+        return response()->json($product);
     }
 
     // Zmaž produkt
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
-        $product->deleteProduct();
+        $product->delete();
+
         return response()->noContent();
     }
 }
+

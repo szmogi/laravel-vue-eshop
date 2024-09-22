@@ -25,6 +25,32 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/products', function () {
+    return Inertia::render('Products/Products');
+})->name('products');
+
+Route::get('/products/{product}', function (Product $product) {
+    return Inertia::render('Products/Product', [
+        'product' => $product,
+    ]);
+})->name('product');
+
+
+Route::get('/cart', function () {
+    return Inertia::render('Cart/Cart');
+})->name('cart');
+
+
+Route::get('/checkout', function () {
+    return Inertia::render('Cart/Checkout');
+})->name('checkout');
+
+
+Route::get('/orders', function () {
+    return Inertia::render('/Orders/Orders');
+})->name('orders')->middleware('auth');
+
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
