@@ -9,7 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'price', 'category_id', 'sku'];
+    protected $fillable = ['name', 'description', 'price', 'category_id', 'sku', 'size_id', 'color_id', 'master_id', 'stock'];
 
     public function images()
     {
@@ -59,6 +59,6 @@ class Product extends Model
 
     public function variants()
     {
-        return $this->hasMany(Product::class, 'master_id');
+        return $this->hasMany(Product::class, 'master_id', 'master_id');
     }
 }

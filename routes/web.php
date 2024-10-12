@@ -17,11 +17,22 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
+
+    $products = Product::with('images', 'category', 'color', 'size','variants')->paginate(12);
+
+    // Eager load the variants separately (not recommended due to multiple queries)
+    foreach ($products as $product) {
+        foreach ($product->variants as $key => $variant) {
+            $product->variants[$key] = Product::with( 'color', 'size')->find($variant->id);
+        }
+    }
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'products' => $products,
     ]);
 });
 

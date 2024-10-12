@@ -1,12 +1,32 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import ProductList from '@/Pages/Products/ProductList.vue';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t, locale } = useI18n();
+const currentLocale = computed(() => locale.value);
+
+const languages = [
+    { code: 'sk', label: 'SK' },
+    { code: 'en', label: 'EN' },
+];
 
 defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
     laravelVersion: String,
     phpVersion: String,
+    products: Object,
 });
+
+const sortedLanguages = computed(() => {
+    return languages.sort((a, b) => (a.code === currentLocale ? -1 : 1));
+});
+const switchLanguage = (lang) => {
+    locale.value = lang; // Change locale for i18n
+    visit(window.location.pathname + '?lang=' + lang); // Trigger Laravel localization
+};
+
 </script>
 
 <template>
@@ -17,15 +37,34 @@ defineProps({
 
     <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
         <div v-if="canLogin" class="sm:fixed bg-ecoGreen w-full sm:top-0 sm:end-0 p-6 text-end z-10 flex justify-between align-center">
-            <div class="flex text-3xl justify-start text-ecoGray-light items-center gap-3">
-                Eshopka
+            <div class="flex  justify-start text-ecoGray-light items-center gap-3">
+                <div class="text-3xl">
+                    Eshopka
+                </div>
+                <div class="flex ml-8 items-center text-ms gap-3 flex-row">
+                    <button
+                        v-for="lang in sortedLanguages"
+                        :key="lang.code"
+                        @click="switchLanguage(lang.code)"
+                        :class="{ active: currentLocale === lang.code }">
+                        {{ lang.label }}
+                    </button>
+                </div>
             </div>
             <div class="flex items-center gap-3">
                 <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="font-semibold hover:underline text-ecoGray-light hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white ">Objednávky</Link>
                 <template v-else>
-                    <Link :href="route('cart')" class="font-semibold hover:underline text-ecoGray-light hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white">Kosik</Link>
+                    <Link :href="route('cart')" class="font-semibold flex flex-row items-center hover:underline text-ecoGray-light mr-4 hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather mr-2 feather-shopping-cart">
+                            <!-- Cart -->
+                            <circle cx="9" cy="20" r="2"></circle>
+                            <circle cx="20" cy="20" r="2"></circle>
+                            <path d="M1 1h4l2 13h13l3-9H6"></path>
+                            <path d="M1 1h4l2 13h13l3-9H6"></path>
+                        </svg>
+                        Kosik
+                    </Link>
                     <Link :href="route('login')" class="font-semibold text-ecoGray-light hover:underline hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white">Log in</Link>
-
                     <Link v-if="canRegister" :href="route('register')" class="ms-4 font-semibold hover:underline text-ecoGray-light hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white ">Register</Link>
                 </template>
             </div>
@@ -33,19 +72,15 @@ defineProps({
         </div>
 
         <div class="max-w-7xl mx-auto p-6 lg:p-8">
-            <div class="flex justify-center mt-16 px-6 sm:items-center sm:justify-between">
-                <div class="text-center text-sm sm:text-start">
-                    &nbsp;
-                </div>
-                <div class="text-center text-sm text-gray-500 dark:text-gray-400 sm:text-end sm:ms-0">
-                    Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
-                </div>
+            <div class="flex text-5xl text-stone-700 justify-center mt-16 py-8 sm:items-center sm:justify-between ">
+                {{ $t('welcome') }}
             </div>
+            <ProductList :products="products" />
         </div>
     </div>
 </template>
 
-<style>
+<style scoped>
 .bg-dots-darker {
     background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z' fill='rgba(0,0,0,0.07)'/%3E%3C/svg%3E");
 }
@@ -53,5 +88,10 @@ defineProps({
     .dark\:bg-dots-lighter {
         background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z' fill='rgba(255,255,255,0.07)'/%3E%3C/svg%3E");
     }
+}
+
+.active {
+    font-weight: bold; /* Highlight the active language button */
+    text-decoration: underline; /* Add an underline to the active language button */
 }
 </style>

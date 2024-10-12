@@ -2,7 +2,6 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 import { useForm } from '@inertiajs/vue3';
-import { useField } from '@inertiajs/vue3';
 
 const props = defineProps({
     product: Object,
