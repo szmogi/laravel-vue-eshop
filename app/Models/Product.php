@@ -11,6 +11,18 @@ class Product extends Model
 
     protected $fillable = ['name', 'description', 'price', 'category_id', 'sku', 'size_id', 'color_id', 'master_id', 'stock'];
 
+    /**
+     * Scope to filter only master products (not variants)
+     */
+    public function scopeOnlyMaster($query)
+    {
+        // Assuming master products have `master_id` as `null` or equal to their own `id`
+        return $query->where(function ($q) {
+            $q->whereNull('master_id')
+                ->orWhereColumn('id', 'master_id');
+        });
+    }
+
     public function images()
     {
         return $this->hasMany(ProductImage::class);

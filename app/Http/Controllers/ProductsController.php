@@ -74,5 +74,66 @@ class ProductsController extends Controller
 
         return response()->noContent();
     }
+
+    // Filter products by master_id (not variants) and return paginated
+    public function filter()
+    {
+        $products = Product::with('images','variants')
+            ->selectRaw('MAX(id) as id, MAX(name) as name, MAX(price) as price, master_id')
+            ->groupBy('master_id')
+            ->paginate(12);
+
+        return $this->returnProducts($products);
+    }
+
+    // Filter products by master_id (not variants) and return paginated (for frontend)
+    public function filterProducts(request $request)
+    {
+        $categories = $request->get('category');
+        $colors = $request->get('color');
+        $sizes = $request->get('size');
+
+        $products = Product::with('images','variants')
+            ->selectRaw('MAX(id) as id, MAX(name) as name, MAX(price) as price, master_id')
+            ->where(function ($query) use ($categories, $colors, $sizes) {
+                if ($categories) {
+                    $query->whereIn('category_id', explode(',', $categories));
+                }
+                if ($colors) {
+                    $query->whereIn('color_id', explode(',', $colors));
+                }
+                if ($sizes) {
+                    $query->whereIn('size_id', explode(',', $sizes));
+                }
+            })
+            ->groupBy('master_id')
+            ->paginate(12);
+
+        // Eager load the variants separately (not recommended due to multiple queries) and return
+
+        return response()->json($this->returnProducts($products));
+    }
+
+
+    /**
+     * Return products
+     */
+    private function returnProducts($products): array
+    {
+        $newProducts = [];
+        $count = 0;
+        foreach ($products as $product) {
+            $newProducts[$product->id] = Product::with('images','color','size','category')->find($product->id);
+            $count++;
+            foreach ($product->variants as $key => $variant) {
+                $product->variants[$key] = Product::with( 'color', 'size')->find($variant->id);
+            }
+
+            $newProducts[$product->id]->variants = $product->variants;
+        }
+        $results['count'] = $count;
+        $results['products'] = $newProducts;
+        return $results;
+    }
 }
 

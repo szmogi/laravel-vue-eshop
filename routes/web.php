@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OtherController;
+use App\Http\Controllers\ProductsController;
 use App\Models\Product;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -17,51 +20,43 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-
-    $products = Product::with('images', 'category', 'color', 'size','variants')->paginate(12);
-
-    // Eager load the variants separately (not recommended due to multiple queries)
-    foreach ($products as $product) {
-        foreach ($product->variants as $key => $variant) {
-            $product->variants[$key] = Product::with( 'color', 'size')->find($variant->id);
-        }
-    }
-
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
-        'products' => $products,
+        'products' => (new App\Http\Controllers\ProductsController)->filter(),
     ]);
 });
 
+// Products
 Route::get('/products', function () {
     return Inertia::render('Products/Products');
 })->name('products');
 
+// Product
 Route::get('/products/{product}', function (Product $product) {
     return Inertia::render('Products/Product', [
         'product' => $product,
     ]);
 })->name('product');
 
-
+// Cart
 Route::get('/cart', function () {
     return Inertia::render('Cart/Cart');
-})->name('cart');
+})->name('cart.page');
 
-
+// Checkout
 Route::get('/checkout', function () {
     return Inertia::render('Cart/Checkout');
 })->name('checkout');
 
-
+// Orders
 Route::get('/orders', function () {
     return Inertia::render('/Orders/Orders');
 })->name('orders')->middleware('auth');
 
-
+// Dashboard
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -72,3 +67,14 @@ Route::middleware([
     })->name('dashboard');
 });
 
+// Cart
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::get('/cart-info', [CartController::class, 'viewCart'])->name('cart.view');
+Route::post('/cart/remove', [CartController::class, 'removeItem'])->name('cart.remove');
+Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+
+// Other controller (for frontend)
+Route::get('/filter-content', [OtherController::class, 'getFilterContent'])->name('filter.content');
+
+// Products filtered by parameters
+Route::get('/products-filtered', [ProductsController::class, 'filterProducts'])->name('products.filter');

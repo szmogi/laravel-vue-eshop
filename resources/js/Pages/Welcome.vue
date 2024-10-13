@@ -1,8 +1,12 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import ProductList from '@/Pages/Products/ProductList.vue';
 import { computed } from 'vue';
+
+import ProductList from '@/Pages/Products/ProductList.vue';
+import SmallCart from '@/Components/SmallCart.vue';
+
 import { useI18n } from 'vue-i18n';
+import ProductFilter from "@/Components/ProductFilter.vue";
 const { t, locale } = useI18n();
 const currentLocale = computed(() => locale.value);
 
@@ -24,6 +28,7 @@ const sortedLanguages = computed(() => {
 });
 const switchLanguage = (lang) => {
     locale.value = lang; // Change locale for i18n
+    localStorage.setItem('locale', lang);
     visit(window.location.pathname + '?lang=' + lang); // Trigger Laravel localization
 };
 
@@ -52,20 +57,13 @@ const switchLanguage = (lang) => {
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="font-semibold hover:underline text-ecoGray-light hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white ">Objednávky</Link>
+                <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="font-semibold hover:underline text-ecoGray-light hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white ">{{ $t('orders') }}</Link>
                 <template v-else>
-                    <Link :href="route('cart')" class="font-semibold flex flex-row items-center hover:underline text-ecoGray-light mr-4 hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather mr-2 feather-shopping-cart">
-                            <!-- Cart -->
-                            <circle cx="9" cy="20" r="2"></circle>
-                            <circle cx="20" cy="20" r="2"></circle>
-                            <path d="M1 1h4l2 13h13l3-9H6"></path>
-                            <path d="M1 1h4l2 13h13l3-9H6"></path>
-                        </svg>
-                        Kosik
+                        <Link :href="'/'" class="font-semibold flex flex-row items-center hover:underline text-ecoGray-light mr-4 hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white">
+                        <SmallCart />
                     </Link>
-                    <Link :href="route('login')" class="font-semibold text-ecoGray-light hover:underline hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white">Log in</Link>
-                    <Link v-if="canRegister" :href="route('register')" class="ms-4 font-semibold hover:underline text-ecoGray-light hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white ">Register</Link>
+                    <Link :href="route('login')" class="font-semibold text-ecoGray-light hover:underline hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white">{{ $t('login') }}</Link>
+                    <Link v-if="canRegister" :href="route('register')" class="ms-4 font-semibold hover:underline text-ecoGray-light hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white ">{{ $t('register') }}</Link>
                 </template>
             </div>
 
@@ -75,6 +73,7 @@ const switchLanguage = (lang) => {
             <div class="flex text-5xl text-stone-700 justify-center mt-16 py-8 sm:items-center sm:justify-between ">
                 {{ $t('welcome') }}
             </div>
+            <ProductFilter />
             <ProductList :products="products" />
         </div>
     </div>
