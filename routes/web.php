@@ -27,7 +27,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
         'products' => (new App\Http\Controllers\ProductsController)->filter(),
     ]);
-});
+})->name('home');
 
 // Products
 Route::get('/products', function () {
@@ -41,10 +41,6 @@ Route::get('/products/{product}', function (Product $product) {
     ]);
 })->name('product');
 
-// Cart
-Route::get('/cart', function () {
-    return Inertia::render('Cart/Cart');
-})->name('cart.page');
 
 // Checkout
 Route::get('/checkout', function () {
@@ -68,6 +64,9 @@ Route::middleware([
 });
 
 // Cart
+Route::get('/cart', [CartController::class, 'cartPage'])->name('cart.page');
+Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::get('/cart/complete', [CartController::class, 'complete'])->name('cart.complete');
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
 Route::get('/cart-info', [CartController::class, 'viewCart'])->name('cart.view');
 Route::post('/cart/remove', [CartController::class, 'removeItem'])->name('cart.remove');

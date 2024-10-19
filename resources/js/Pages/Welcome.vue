@@ -4,6 +4,7 @@ import { computed } from 'vue';
 
 import ProductList from '@/Pages/Products/ProductList.vue';
 import SmallCart from '@/Components/SmallCart.vue';
+import PageLayout from '@/Layouts/PageLayout.vue';
 
 import { useI18n } from 'vue-i18n';
 import ProductFilter from "@/Components/ProductFilter.vue";
@@ -23,52 +24,14 @@ defineProps({
     products: Object,
 });
 
-const sortedLanguages = computed(() => {
-    return languages.sort((a, b) => (a.code === currentLocale ? -1 : 1));
-});
-const switchLanguage = (lang) => {
-    locale.value = lang; // Change locale for i18n
-    localStorage.setItem('locale', lang);
-    visit(window.location.pathname + '?lang=' + lang); // Trigger Laravel localization
-};
-
 </script>
 
 <template>
     <head>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     </head>
-    <Head title="Welcome" />
-
-    <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
-        <div v-if="canLogin" class="sm:fixed bg-ecoGreen w-full sm:top-0 sm:end-0 p-6 text-end z-10 flex justify-between align-center">
-            <div class="flex  justify-start text-ecoGray-light items-center gap-3">
-                <div class="text-3xl">
-                    Eshopka
-                </div>
-                <div class="flex ml-8 items-center text-ms gap-3 flex-row">
-                    <button
-                        v-for="lang in sortedLanguages"
-                        :key="lang.code"
-                        @click="switchLanguage(lang.code)"
-                        :class="{ active: currentLocale === lang.code }">
-                        {{ lang.label }}
-                    </button>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="font-semibold hover:underline text-ecoGray-light hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white ">{{ $t('orders') }}</Link>
-                <template v-else>
-                        <Link :href="'/'" class="font-semibold flex flex-row items-center hover:underline text-ecoGray-light mr-4 hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white">
-                        <SmallCart />
-                    </Link>
-                    <Link :href="route('login')" class="font-semibold text-ecoGray-light hover:underline hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white">{{ $t('login') }}</Link>
-                    <Link v-if="canRegister" :href="route('register')" class="ms-4 font-semibold hover:underline text-ecoGray-light hover:text-ecoGray-dark dark:text-gray-400 dark:hover:text-white ">{{ $t('register') }}</Link>
-                </template>
-            </div>
-
-        </div>
-
+    <Head title="Welcome"/>
+    <PageLayout>
         <div class="max-w-7xl mx-auto p-6 lg:p-8">
             <div class="flex text-5xl text-stone-700 justify-center mt-16 py-8 sm:items-center sm:justify-between ">
                 {{ $t('welcome') }}
@@ -76,7 +39,7 @@ const switchLanguage = (lang) => {
             <ProductFilter />
             <ProductList :products="products" />
         </div>
-    </div>
+    </PageLayout>
 </template>
 
 <style scoped>

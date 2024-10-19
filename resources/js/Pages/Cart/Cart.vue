@@ -1,21 +1,36 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head , Link} from '@inertiajs/vue3';
+import PageLayout from '@/Layouts/PageLayout.vue';
+import { useI18n } from 'vue-i18n';
+const { t, locale } = useI18n();
+import { useCartStore } from "@/stores/useCart.js";
+const useCar = useCartStore();
+useCar.initCart();
+import CartStep from '@/Components/CartStep.vue';
+
+defineProps({
+    cartList: Object,
+    step: Number,
+});
+
 </script>
 
 <template>
     <Head title="Cart" />
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-        <div class="max-w-7xl mx-auto py-12 sm:px-6 lg:px-8">
-            <div class="max-w-4xl mx-auto text-center">
-                <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                    Cart
-                </h2>
-            </div>
+    <PageLayout>
+        <div id="cart" class="min-h-screen mt-24 bg-gray-100 dark:bg-gray-900">
+             <h2 class="text-3xl text-center font-bold tracking-tight text-gray-900 sm:text-4xl py-8">
+               {{ $t('cartTitle')}}
+             </h2>
+             <CartStep :step="step" />
         </div>
-    </div>
+        <div >
+            
+        </div>
+    </PageLayout>
 </template>
 
-<style>
+<style scoped>
 .bg-dots-darker {
     background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z' fill='rgba(0,0,0,0.07)'/%3E%3C/svg%3E");
 }
@@ -24,4 +39,5 @@ import { Head } from '@inertiajs/vue3';
         background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z' fill='rgba(255,255,255,0.07)'/%3E%3C/svg%3E");
     }
 }
+
 </style>

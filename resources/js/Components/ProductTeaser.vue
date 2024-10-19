@@ -73,13 +73,13 @@ const price = computed(() => {
 
 </script>
 <template>
-    <div class="border w-full rounded hover:border-green-800 hover:transform hover:scale-105 duration-100 border-gray-300 hover:shadow-green-800  selection:bg-red-500 selection:text-white">
+    <div class="border w-full bg-white rounded hover:border-green-800 hover:transform hover:scale-105 duration-100 border-gray-300 hover:shadow-green-800  selection:bg-red-500 selection:text-white">
         <img src="/default-product.jpg" alt="product image" class="w-full h-40 object-cover" />
-        <div class="p-4 h-30 flex flex-col justify-between">
+        <div class="p-4 h-30 flex flex-col w-full justify-between">
             <h2 class="text-lg mb-2 uppercase font-bold">{{ product.name }}</h2>
             <p class="h-12 overflow-hidden text-ellipsis">{{ product.description }}</p>
         </div>
-        <div class="flex px-4 justify-between">
+        <div class="flex px-4 w-full justify-between">
             <div>{{ product.size.name }}</div>
             <div class="flex items-center gap-2">
                 <div :title="product.color.name" class="w-6 h-6 border-2 border-green-900 rounded-full" :style="'background-color:' + product.color.name"></div>
@@ -104,7 +104,7 @@ const price = computed(() => {
                 <button @click="quantity--" class="bg-gray-200 dark:bg-gray-800 px-4 py-2 rounded-md text-sm font-medium">
                     -
                 </button>
-                <input v-model="quantity" type="number" class="bg-gray-200 dark:bg-gray-800 text-end py-2 px-1 w-9 rounded-md text-sm font-medium" placeholder="0">
+                <input v-model="quantity" type="number" class="bg-white dark:bg-gray-800 text-center py-2 px-1 w-9 rounded-md text-sm font-medium" placeholder="0">
                 <button @click="quantity++" class="bg-gray-200 dark:bg-gray-800 px-4 py-2 rounded-md text-sm font-medium">
                    +
                 </button>
@@ -120,5 +120,17 @@ const price = computed(() => {
 <style scoped>
 .border {
     @apply border-gray-300 dark:border-gray-700 dark:bg-gray-900 selection:bg-red-500 selection:text-white;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
 }
 </style>
