@@ -5,9 +5,11 @@ export const useCartStore = defineStore('cart', {
     state: () => ({
         user: [],
         cart: [],
+        cartArray: [],
         count: 0,
         countAllProducts: 0,
         totalSum: 0,
+        noVat: 0,
     }),
     actions: {
         setUser(user) {
@@ -40,19 +42,36 @@ export const useCartStore = defineStore('cart', {
             });
         },
 
-        setCart(cart) {
-            this.count = Object.keys(cart).length;
-            this.cart = cart;
-            this.user.cart = cart;
-
-            this.countAllProducts = Object.keys(cart).reduce((acc, current) => {
-                return acc + cart[current].quantity;
-            }, 0);
-
-            this.totalSum = Object.keys(cart).reduce((acc, current) => {
-                return acc + cart[current].price * cart[current].quantity;
-            }, 0);
+        async clearCart() {
+            await axios.post(route('cart.clear')).then(response => {
+                this.setCart(response.data.cart);
+            });
         },
 
+        setCart(cart) {
+            this.count = Object.keys(cart['cart']).length;
+            this.cart = cart['cart'];
+            this.user.cart = cart['cart'];
+            this.totalSum = cart['totalSum'];
+            this.noVat = cart['noVat'];
+
+            this.countAllProducts = Object.keys(cart['cart']).reduce((acc, current) => {
+                return acc + cart['cart'][current].quantity;
+            }, 0);
+
+            this.cartArray = Object.keys(cart['cart']).map(function(key) {
+                return cart['cart'][key];
+            });
+        },
+
+        async setQuantity(id, quantity) {
+            await axios.post(route('cart.set.quantity'), {
+                id: id,
+                quantity: quantity,
+            }).then(response => {
+                this.setCart(response.data.cart);
+                return response.data.cart;
+            });
+        },
     },
 });

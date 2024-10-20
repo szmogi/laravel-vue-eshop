@@ -111,7 +111,7 @@ const price = computed(() => {
             </div>
         </div>
         <div class="px-4 w-full mb-4 flex justify-between">
-            <CartButton @click="useCar.addToCart(product, quantity)" class="bg-green-600 text-white hover:bg-green-800 w-full " :product="product" />
+            <CartButton @click="useCar.addToCart(product, quantity)" class="bg-ecoBlue-light text-white hover:bg-ecoBlue-dark w-full " :product="product" />
         </div>
     </div>
 </template>

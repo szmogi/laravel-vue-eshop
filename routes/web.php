@@ -71,6 +71,7 @@ Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add')
 Route::get('/cart-info', [CartController::class, 'viewCart'])->name('cart.view');
 Route::post('/cart/remove', [CartController::class, 'removeItem'])->name('cart.remove');
 Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+Route::post('/cart/item/quantity', [CartController::class, 'setQuantity'])->name('cart.set.quantity');
 
 // Other controller (for frontend)
 Route::get('/filter-content', [OtherController::class, 'getFilterContent'])->name('filter.content');

@@ -33,7 +33,7 @@ defineProps({
     <Head title="Welcome"/>
     <PageLayout>
         <div class="max-w-7xl mx-auto p-6 lg:p-8">
-            <div class="flex text-5xl text-stone-700 justify-center mt-16 py-8 sm:items-center sm:justify-between ">
+            <div class="flex text-4xl text-ecoBlue-dark justify-center mt-16 py-8 sm:items-center sm:justify-between ">
                 {{ $t('welcome') }}
             </div>
             <ProductFilter />

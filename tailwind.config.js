@@ -14,6 +14,17 @@ export default {
 
     theme: {
         extend: {
+            screens: {
+                '2xl': '1400px',
+                '3xl': '1536px',
+            },
+            spacing: {
+                '128': '32rem',
+                '144': '36rem',
+            },
+            height: {
+                '128': '32rem',
+            },
             fontFamily: {
                 sans: ['Poppins', 'sans-serif'], // Môžete zmeniť na akékoľvek písmo
             },
@@ -27,6 +38,11 @@ export default {
                     light: '#E0E0E0', // svetlá sivá
                     DEFAULT: '#4F4F4F', // základná sivá
                     dark: '#333333', // tmavá sivá
+                },
+                ecoBlue: {
+                    light: '#59b6d9', // svetlá zelená
+                    DEFAULT: '#2d88ad', // základná modrá
+                    dark: '#195c72', // tmavá zelená
                 },
             },
         },
