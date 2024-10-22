@@ -78,3 +78,6 @@ Route::get('/filter-content', [OtherController::class, 'getFilterContent'])->nam
 
 // Products filtered by parameters
 Route::get('/products-filtered', [ProductsController::class, 'filterProducts'])->name('products.filter');
+
+Route::get('/shipping-rates', [OtherController::class, 'getShippingRates'])->name('shipping.rates');
+Route::get('/payment-methods', [OtherController::class, 'getPaymentMethods'])->name('payment.methods');

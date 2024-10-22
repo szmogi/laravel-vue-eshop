@@ -10,6 +10,8 @@ export const useCartStore = defineStore('cart', {
         countAllProducts: 0,
         totalSum: 0,
         noVat: 0,
+        shippingRates: [],
+        paymentMethods: [],
     }),
     actions: {
         setUser(user) {
@@ -73,5 +75,29 @@ export const useCartStore = defineStore('cart', {
                 return response.data.cart;
             });
         },
+
+
+
+
+        async getShippingRates() {
+            await axios.get(route('shipping.rates')).then(response => {
+                this.setShippingRates(response.data);
+            });
+        },
+
+        async getPaymentMethods() {
+            await axios.get(route('payment.methods')).then(response => {
+                this.setPaymentMethods(response.data);
+            });
+        },
+
+        setShippingRates(shippingRates) {
+            this.shippingRates = shippingRates;
+        },
+
+        setPaymentMethods(paymentMethods) {
+            this.paymentMethods = paymentMethods;
+        },
+
     },
 });

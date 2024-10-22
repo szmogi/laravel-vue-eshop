@@ -22,4 +22,42 @@ class OtherController extends Controller
             'sizes' => $sizes,
         ]);
     }
+
+
+    function getShippingRates()
+    {
+        //$shippingRates = ShippingRate::all();
+
+        $shippingRates = [
+            [
+                'id' => 1,
+                'name' => 'Standard Shipping',
+                'price' => 10,
+            ],
+            [
+                'id' => 2,
+                'name' => 'Express Shipping',
+                'price' => 20,
+            ],
+        ];
+        return response()->json($shippingRates);
+    }
+
+    function getPaymentMethods()
+    {
+        //$paymentMethods = PaymentMethod::all();
+
+
+         $paymentMethods = [
+            [
+                'id' => 1,
+                'name' => 'PayPal',
+            ],
+            [
+                'id' => 2,
+                'name' => 'Credit Card',
+            ],
+        ];
+        return response()->json($paymentMethods);
+    }
 }

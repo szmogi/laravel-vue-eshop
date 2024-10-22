@@ -1,11 +1,19 @@
 <template>
     <nav>
         <ul class="flex w-8/12 justify-between text-ecoBlue-dark items-center mx-auto">
-            <li :class="{ active: step === 1 }"><Link :href="route('cart.page')">{{ $t('firstStep')}}</Link></li>
-            <li class="middle-line"></li>
-            <li :class="{ active: step === 2 }"><Link :href="route('cart.checkout')">{{ $t('secondStep')}}</Link></li>
-            <li class="middle-line"></li>
-            <li :class="{ active: step === 3 }"><Link :href="route('cart.complete')">{{ $t('thirdStep')}}</Link></li>
+            <li :class="{ active: step === 1 }"><Link :href="route('cart.page')">
+                <span class="bg-ecoBlue text-2xl rounded-full flex justify-center items-center text-white
+                 w-12 h-12">1</span></Link></li>
+            <li class="middle-line w-3/12 bg-ecoBlue-light h-[0.5px] p-0"></li>
+            <li :class="{ active: step === 2 }"><Link :href="route('cart.checkout')">
+                <span class="bg-ecoBlue text-2xl rounded-full flex justify-center items-center text-white
+                 w-12 h-12">2</span>
+            </Link></li>
+            <li class="middle-line w-3/12 bg-ecoBlue-light h-[0.5px] p-0"></li>
+            <li :class="{ active: step === 3 }"><Link :href="route('cart.complete')">
+                <span class="bg-ecoBlue text-2xl rounded-full flex justify-center items-center text-white
+                 w-12 h-12">3</span>
+            </Link></li>
         </ul>
     </nav>
 </template>
@@ -43,7 +51,16 @@ nav li {
     padding: 10px;
     border-bottom: 2px solid transparent;
 }
+
+nav li.middle-line {
+    padding: 0;
+}
+
 nav li.active {
     border-bottom: 2px solid #195c72;
+
+    span {
+        background-color: #195c72;
+    }
 }
 </style>

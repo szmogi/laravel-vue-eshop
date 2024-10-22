@@ -45,7 +45,7 @@ const setQuantity = (id, quantity) => {
                     <template #list="slotProps">
                         <div class="flex flex-col">
                             <div v-for="(item, index) in slotProps.items" :key="index">
-                                <div class="flex flex-col sm:flex-row sm:items-center p-6 gap-4" :class="{ 'border-t border-surface-200 dark:border-surface-700': index !== 0 }">
+                                <div class="flex flex-col relative sm:flex-row sm:items-center p-6 gap-4" :class="{ 'border-t border-surface-200 dark:border-surface-700': index !== 0 }">
                                     <div class="md:w-40 relative">
                                         <img class="block xl:block mx-auto rounded w-full" src="/default-product.jpg" :alt="item.name" />
                                         <div class="absolute bg-black/70 rounded-border" style="left: 4px; top: 4px">
@@ -53,16 +53,10 @@ const setQuantity = (id, quantity) => {
                                         </div>
                                     </div>
                                     <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
-                                        <div class="flex flex-row md:flex-col justify-between items-start gap-2">
-                                            <div>
+                                        <div class="flex flex-row md:flex-col justify-between items-start gap-3">
+                                            <div class="min-w-40">
                                                 <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{ item.category }}</span>
                                                 <div class="text-lg text-eco font-medium mt-2">{{ item.name }}</div>
-                                            </div>
-                                            <div class="bg-surface-100 p-1" style="border-radius: 30px">
-                                                <div class="bg-surface-0 flex items-center gap-2 justify-center py-1 px-2" style="border-radius: 30px; box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.04), 0px 1px 2px 0px rgba(0, 0, 0, 0.06)">
-                                                    <span class="text-surface-900 font-medium text-sm">{{ item.rating }}</span>
-                                                    <i class="pi pi-star-fill text-yellow-500"></i>
-                                                </div>
                                             </div>
                                         </div>
 
@@ -80,9 +74,9 @@ const setQuantity = (id, quantity) => {
 
                                         <div class="flex flex-col md:items-end gap-8">
                                             <span class="text-xl font-semibold">${{ item.price }}</span>
-                                            <div class="flex flex-row-reverse md:flex-row gap-2">
-                                                 <Button type="danger">
-                                                     {{ $t('remove') }}
+                                            <div class="flex flex-row-reverse md:flex-row gap-2 absolute top-2 right-2">
+                                                 <Button class="text-sm py-1 px-1" type="danger">
+                                                     X
                                                  </Button>
                                             </div>
                                         </div>
@@ -94,10 +88,10 @@ const setQuantity = (id, quantity) => {
                 </DataView>
 
                 <div class="flex bg-white mt-8 px-8 flex-col py-8 justify-end items-end gap-3">
-                    <div class="text-center text-2xl font-bold tracking-tight text-ecoBlue-dark sm:text-4xl">
+                    <div class="text-center text-2xl font-bold tracking-tight text-ecoBlue-dark sm:text-3xl">
                         {{ $t('totalSum') }}: {{ useCar.totalSum }} €
                     </div>
-                    <div class="text-center text-2xl font-bold tracking-tight text-ecoBlue-dark sm:text-2xl">
+                    <div class="text-center text-2xl font-bold tracking-tight text-ecoBlue-dark sm:text-xl">
                         {{ $t('noVat') }}: {{ useCar.noVat }} €
                     </div>
                 </div>
