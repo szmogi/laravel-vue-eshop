@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { ref } from 'vue';
 import axios from 'axios';
 
 export const useCartStore = defineStore('cart', {
@@ -12,6 +13,13 @@ export const useCartStore = defineStore('cart', {
         noVat: 0,
         shippingRates: [],
         paymentMethods: [],
+        currencyType: ref([
+            { id: 1, name: 'EUR', price: 0.01 , active: true },
+            { id: 2, name: 'CZK', price: 0.01 , active: false},
+            { id: 3, name: 'USD', price: 0.01 , active: false},
+        ] ),
+        village: ref([]),
+        villageResult: ref([]),
     }),
     actions: {
         setUser(user) {
@@ -97,6 +105,34 @@ export const useCartStore = defineStore('cart', {
 
         setPaymentMethods(paymentMethods) {
             this.paymentMethods = paymentMethods;
+        },
+
+        async getVillages() {
+            const response = await fetch(import.meta.env.VITE_VILLAGES);
+            if (!response.ok) {
+                return [];
+            }
+            this.village = await response.json(); // Predpokladáme, že JSON obsa
+        },
+
+         searchVillage(query) {
+            if (query.length < 3) {
+                this.villageResult = [];
+                return;
+            }
+            this.villageResult = this.village.filter(d => {
+                const normalizedFullname = d.zip
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036F]/g, "")
+                    .toLowerCase();
+
+                const normalizedQuery = query
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036F]/g, "")
+                    .toLowerCase();
+
+                return normalizedFullname.indexOf(normalizedQuery) > -1;
+            }).slice(0, 10);
         },
 
     },

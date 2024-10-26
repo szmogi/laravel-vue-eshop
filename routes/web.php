@@ -81,3 +81,12 @@ Route::get('/products-filtered', [ProductsController::class, 'filterProducts'])-
 
 Route::get('/shipping-rates', [OtherController::class, 'getShippingRates'])->name('shipping.rates');
 Route::get('/payment-methods', [OtherController::class, 'getPaymentMethods'])->name('payment.methods');
+
+
+
+
+Route::get('/api/proxy/exchangerate', function () {
+    $response = file_get_contents('https://api.exchangerate-api.com/v4/latest/EUR?app_id='.env('VITE_API_KEY_RATE'));
+    return response($response, 200)->header('Content-Type', 'application/json');
+});
+

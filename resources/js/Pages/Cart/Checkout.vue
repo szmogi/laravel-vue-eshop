@@ -2,12 +2,13 @@
 import { Head, Link } from '@inertiajs/vue3';
 import PageLayout from '@/Layouts/PageLayout.vue';
 import CartStep from '@/Components/CartStep.vue';
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref , watch} from "vue";
 import { useCartStore } from "@/stores/useCart.js";
 const useCar = useCartStore();
-
+useCar.getVillages();
 import axios from "axios";
-
+import Button from "@/Components/Button.vue";
+import SmallCart from "@/Components/SmallCart.vue";
 defineProps({
     step: Number,
     cartList: Object,
@@ -24,19 +25,28 @@ const form = reactive({
     isCompany: false,
     companyName: '',
     vatNumber: '',
+    zipCode: '',
+    currencyType: null,
 });
 
 const shippingRates = ref([]);
 const paymentMethods = ref([]);
-const subtotal = ref(100);  // Replace with actual subtotal from cart
 const shippingCost = ref(0);
 const total = ref(0);
 const totalInUSD = ref(0);
+const totalInCzk = ref(0);
+const image = ref('/default-product.jpg');
+const products = ref({});
+const valPhone = ref(true);
+
 
 const validatePhone = () => {
-    const phoneRegex = /^[0-9]{10}$/;
+    // Regex for validating different phone formats
+    const phoneRegex = /^(?:\+?\d{1,3}[- ]?)?(?:\(?\d{3}\)?[- ]?)?\d{3}[- ]?\d{4}$/;
     if (!phoneRegex.test(form.phone)) {
-        alert('Invalid phone number');
+        valPhone.value = false;
+    } else {
+        valPhone.value = true;
     }
 };
 
@@ -44,30 +54,42 @@ const calculateShipping = () => {
     if (form.shippingMethod) {
         shippingCost.value = form.shippingMethod.price;
         calculateTotal();
+        convertTocalCurrency();
     }
 };
 
 const calculateTotal = () => {
-    total.value = subtotal.value + shippingCost.value;
-    convertToUSD();
+    total.value = useCar.totalSum + shippingCost.value;
+    convertTocalCurrency();
 };
 
-const convertToUSD = async () => {
+const convertTocalCurrency = async () => {
     try {
-        const response = await axios.get('https://api.exchangerate-api.com/v4/latest/EUR');
-        const rate = response.data.rates.USD;
-        totalInUSD.value = (total.value * rate).toFixed(2);
+        let response = JSON.parse(sessionStorage.getItem('rate')).rates;
+        if(!response) {
+            response = await axios.get(`/api/proxy/exchangerate`);
+            sessionStorage.setItem('rate', JSON.stringify(response.data));
+            response = response.data.rates;
+        }
+        const rateUSD = response.USD;
+        const rateCzk = response.CZK;
+        totalInUSD.value = (total.value * rateUSD).toFixed(2);
+        totalInCzk.value = (total.value * rateCzk).toFixed(2);
     } catch (error) {
         console.error('Error fetching exchange rate:', error);
     }
 };
 
 const submitOrder = async () => {
-    try {
-        const response = await axios.post('/orders', form);
-        console.log('Order submitted', response);
-    } catch (error) {
-        console.error('Order submission failed', error);
+    console.log(form);
+
+    if(valPhone.value) {
+      /*  try {
+      const response = await axios.post('/orders', form);
+      console.log('Order submitted', response);
+      } catch (error) {
+          console.error('Order submission failed', error);
+      }*/
     }
 };
 
@@ -80,13 +102,40 @@ const setPayMethode = (method) => {
     form.paymentMethod = method;
 };
 
+const calculateCurrency = (name) => {
+    if(name === 'EUR') {
+        name = 'EUR';
+    } else if(name === 'CZK') {
+        name = 'CZK';
+    } else if(name === 'USD') {
+        name = 'USD';
+    }
+
+    useCar.currencyType.forEach(currency => {
+        if(currency.name === name) {
+            currency.active = true;
+        } else {
+            currency.active = false;
+        }
+    });
+    convertTocalCurrency();
+};
+
 onMounted(() => {
     useCar.getShippingRates();
     useCar.getPaymentMethods();
 });
 
-</script>
+watch(() => useCar.cart, () => {
+    products.value = useCar.cart;
+    total.value = useCar.totalSum;
+    convertTocalCurrency();
+    if(shippingCost.value > 0) {
+        total.value = useCar.totalSum + shippingCost.value;
+    }
+});
 
+</script>
 <template>
     <Head title="Checkout" />
     <PageLayout :visible-banner="false">`
@@ -96,10 +145,48 @@ onMounted(() => {
             <h1 class="text-center text-2xl font-bold tracking-tight text-ecoBlue-dark sm:text-4xl py-8">
                 {{ $t('OrderDetails')}}
             </h1>
-               <div class="flex flex-row  justify-center items-center mt-8">
-                <form @submit.prevent="submitOrder" class="max-w-xl w-6/12  mx-auto bg-white p-8 rounded-lg shadow-md">
+               <div class="flex flex-row justify-between items-center mt-8">
+                <form @submit.prevent="submitOrder" class="w-full">
                     <!-- Customer Details -->
-                    <div class="mb-4">
+                  <div class="flex flex-row justify-start items-start mb-8" >
+                   <div class="w-6/12 mr-4 bg-white p-8 rounded-lg shadow-md">
+                    <div class="flex flex-row justify-between items-center py-4 mb-8 border-b border-gray-200 dark:border-gray-700">
+                        <div v-if="!$page.props.auth.user">
+                            <Link :href="route('login')" class="font-semibold text-ecoBlue hover:underline hover:text-ecoBlue-dark dark:text-gray-400 dark:hover:text-white">{{ $t('login') }}</Link>
+                            <Link v-if="!$page.props.auth.user" :href="route('register')" class="ms-6 font-semibold hover:underline text-ecoBlue hover:text-ecoBlue-dark dark:text-gray-400 dark:hover:text-white ">{{ $t('register') }}</Link>
+                        </div>
+                        <div v-else>
+                            <p class="font-semibold text-ecoBlue hover:underline hover:text-ecoBlue-dark dark:text-gray-400 dark:hover:text-white">{{ $page.props.auth.user.name }}</p>
+                        </div>
+                    </div>
+                   <div v-if="!$page.props.auth.user">
+                       <p class="font-semibold text-yellow-500 dark:text-gray-400 dark:hover:text-white">{{ $t('notRegisteredCart') }}</p>
+                   </div>
+
+                   <!-- Shipping Method -->
+                   <div class="mb-4 mt-4">
+                       <label for="shipping" class="block text-gray-700 font-bold mb-2">{{ $t('currencyType') }}</label>
+                       <div @click="calculateCurrency(currency.name)" v-for="currency in useCar.currencyType" :key="currency.id" class="flex cursor-pointer items-center mb-2">
+                           <input
+                               type="radio"
+                               v-model="form.currencyType"
+                               :value="currency.name"
+                               class="hidden peer"
+                               @change="calculateCurrency(currency.name)"
+                               :checked="currency.active"
+                               required
+                           />
+                           <div class="w-4 mr-2 mb-0.5 h-4 border border-stone-400 rounded-md peer-checked:bg-ecoBlue peer-checked:border-ecoBlue flex items-center justify-center transition duration-200">
+                               <!-- Checkmark (conditionally shown) -->
+                               <svg class="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                   <path d="M5 13l4 4L19 7"/>
+                               </svg>
+                           </div>
+                           <span>{{currency.name}}</span>
+                       </div>
+                   </div>
+
+                    <div class="mb-4 mt-4">
                         <label for="name" class="block text-gray-700 font-bold mb-2">{{ $t('name') }}</label>
                         <input
                             v-model="form.name"
@@ -122,18 +209,20 @@ onMounted(() => {
                         />
                     </div>
                     <div class="mb-4">
-                        <label for="phone" class="block text-gray-700 font-bold mb-2">{{ $t('phone') }}</label>
+                        <label for="phone" class="flex w-full justify-between text-gray-700 font-bold mb-2">{{ $t('phone') }}
+                        <span v-if="!valPhone" class="text-red-500 font-bold">{{ $t('invalidPhone') }}</span>
+                        </label>
                         <input
                             v-model="form.phone"
                             id="phone"
                             type="tel"
                             :placeholder="$t('enterPhone')"
                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-ecoBlue"
+                            :class="{ 'border-red-500': !valPhone }"
                             required
-                            @input="validatePhone"
+                            @blur="validatePhone(form.phone)"
                         />
                     </div>
-
                     <!-- Shipping Address -->
                     <div class="mb-4">
                         <label for="address" class="block text-gray-700 font-bold mb-2">{{ $t('address') }}</label>
@@ -146,6 +235,24 @@ onMounted(() => {
                             required
                         />
                     </div>
+                   <!-- Shipping Address -->
+                   <div class="mb-4">
+                       <label for="address" class="block text-gray-700 font-bold mb-2">{{ $t('zipCode') }}</label>
+                       <input
+                           v-model="form.zipCode"
+                           id="address"
+                           type="text"
+                           :placeholder="$t('enterZipCode')"
+                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-ecoBlue"
+                           required
+                           @input="useCar.searchVillage(form.zipCode)"
+                       />
+                       <div v-if="useCar.villageResult.length > 0" class="flex flex-row w-full mt-1 justify-start flex-wrap  items-center">
+                           <div v-for="village in useCar.villageResult" :key="village.id" class="flex flex-row py-1 items-center">
+                               <label @click="form.city = village.fullname; form.zipCode = village.zip; " class="mr-2 uppercase cursor-pointer hover:bg-ecoBlue w-full text-sm bg-ecoBlue-light p-1 rounded text-white" :for="village.fullname">{{ village.fullname }}</label>
+                           </div>
+                       </div>
+                   </div>
                     <div class="mb-4">
                         <label for="city" class="block text-gray-700 font-bold mb-2">{{ $t('city') }}</label>
                         <input
@@ -165,6 +272,7 @@ onMounted(() => {
                                 type="checkbox"
                                 v-model="form.isCompany"
                                 class="hidden peer"
+                                required
                             />
                             <div class="w-4 mr-2 mb-0.5 h-4 border border-stone-400 rounded-md peer-checked:bg-ecoBlue peer-checked:border-ecoBlue flex items-center justify-center transition duration-200">
                                 <!-- Checkmark (conditionally shown) -->
@@ -186,6 +294,7 @@ onMounted(() => {
                                 type="text"
                                 placeholder="Company Name"
                                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
                             />
                         </div>
                         <div class="mb-4">
@@ -196,6 +305,7 @@ onMounted(() => {
                                 type="text"
                                 placeholder="VAT Number"
                                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
                             />
                         </div>
                     </div>
@@ -210,6 +320,7 @@ onMounted(() => {
                                 :value="rate"
                                 class="hidden peer"
                                 @change="calculateShipping"
+                                required
                             />
                             <div class="w-4 mr-2 mb-0.5 h-4 border border-stone-400 rounded-md peer-checked:bg-ecoBlue peer-checked:border-ecoBlue flex items-center justify-center transition duration-200">
                                 <!-- Checkmark (conditionally shown) -->
@@ -240,30 +351,53 @@ onMounted(() => {
                             </div>
                             <span>{{ method.name }}</span>
                         </div>
-                    </div>
-                </form>
-                 <div class="flex w-6/12 flex-col">
-                     <div class="flex min-h-40  w-full flex-col mx-auto bg-white p-8 rounded-lg shadow-md">
-                         <h2 class="text-md font-bold tracking-tight text-ecoBlue-dark sm:text-xl ">
-                             {{ $t('OrderSummary')}}
-                         </h2>
-
-                     </div>
-                    <!-- Order Summary -->
-                       <div  class="flex w-full flex-col mx-auto bg-white p-8 rounded-lg shadow-md">
-                           <div class="text-end">
-                               <p class="text-gray-700 font-bold">{{ $t('subtotal') }}: <span class="text-gray-900">{{ subtotal }} EUR</span></p>
-                               <p class="text-gray-700 font-bold">{{ $t('shippingCost') }}: <span class="text-gray-900">{{ shippingCost }} EUR</span></p>
-                               <p class="text-gray-700 font-bold">
-                                   {{ $t('total') }}: <span class="text-gray-900">{{ total }} EUR</span></p>
-                               <p class="text-gray-700 font-bold">{{ $t('totalInUSD') }}: <span class="text-gray-900">{{ totalInUSD }} USD</span></p>
-                           </div>
-
-                           <button type="submit" class="mt-6 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300">
-                               {{ $t('submitOrder') }}
-                           </button>
+                       </div>
+                      </div>
+                       <div class="flex min-h-40 w-6/12 flex-col bg-white p-8 rounded-lg shadow-md">
+                           <h2 class="text-md font-bold tracking-tight text-ecoBlue-dark sm:text-xl ">
+                               {{ $t('OrderSummary')}}
+                           </h2>
+                           <nav v-if="Object.keys(products).length > 0" class="flex flex-col gap-2">
+                               <li v-for="item in products" :key="item.id" class="flex py-2 items-center justify-between">
+                                   <div class="flex items-center">
+                                       <img :src="image" class="w-10 h-10 rounded-full object-cover mr-4" alt="">
+                                       <div class="flex items-center flex-row">
+                                           <span class="text-sm font-bold mr-3">{{ item.quantity }}×</span>
+                                           <span class="text-sm font-bold">{{ item.name }}</span>
+                                       </div>
+                                   </div>
+                                   <div class="flex items-center ">
+                                       <span class="text-xs text-gray-500">{{ item.price }}</span>
+                                   </div>
+                                   <div class="flex items-center">
+                                       <span class="text-sm font-bold">{{ item.price }} €</span>
+                                   </div>
+                               </li>
+                           </nav>
                        </div>
                    </div>
+                    <div class="flex h-fit w-full flex-col justify-between">
+                        <!-- Order Summary -->
+                        <div  class="flex w-full flex-col mx-auto bg-white p-8 rounded-lg shadow-md">
+                            <div class="text-end">
+                                <p class="text-gray-700 font-bold">{{ $t('subtotal') }}: <span class="text-gray-900">{{ useCar.totalSum }} EUR</span></p>
+                                <p class="text-gray-700 font-bold">{{ $t('shippingCost') }}: <span class="text-gray-900">{{ shippingCost }} EUR</span></p>
+                                <p v-if="useCar.currencyType[0].active" class="text-gray-700 font-bold">
+                                    {{ $t('total') }}: <span class="text-gray-900">{{ total }} EUR</span></p>
+                                <p v-if="useCar.currencyType[1].active" class="text-gray-700 font-bold">{{ $t('totalInCzk') }}: <span class="text-gray-900">{{ totalInCzk }} CZK</span></p>
+                                <p v-if="useCar.currencyType[2].active" class="text-gray-700 font-bold">{{ $t('totalInUSD') }}: <span class="text-gray-900">{{ totalInUSD }} USD</span></p>
+                            </div>
+                            <div class="flex mt-6 w-full justify-between items-center flex-row">
+                                <Link class="w-2/12 bg-ecoGreen-light text-white rounded flex justify-center items-center hover:bg-ecoGreen text-md uppercase h-12" :href="route('cart.page')">
+                                    {{ $t('backButton') }}
+                                </Link>
+                                <Button type="button" class=" w-6/12 text-xl uppercase h-16">
+                                    {{ $t('submitOrder') }}
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
                </div>
         </div>
     </div>

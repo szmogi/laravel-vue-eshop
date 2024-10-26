@@ -15,13 +15,13 @@
         </div>
     </div>
     <div class="flex items-center gap-3">
-        <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="font-semibold hover:underline text-white hover:text-ecoBlue-dark dark:text-gray-400 dark:hover:text-white ">{{ $t('orders') }}</Link>
+        <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="font-semibold hover:underline text-white  dark:text-gray-400 dark:hover:text-white ">{{ $t('orders') }}</Link>
         <template v-else>
-            <Link :href="'/'" class="font-semibold flex flex-row items-center hover:underline text-white mr-4 hover:text-ecoBlue-dark dark:text-gray-400 dark:hover:text-white">
+            <Link :href="'/'" class="font-semibold flex flex-row items-center hover:underline text-white mr-4  dark:text-gray-400 dark:hover:text-white">
                 <SmallCart class="opacity-100" />
             </Link>
-            <Link :href="route('login')" class="font-semibold text-white hover:underline hover:text-ecoBlue-dark dark:text-gray-400 dark:hover:text-white">{{ $t('login') }}</Link>
-            <Link v-if="!$page.props.auth.user" :href="route('register')" class="ms-4 font-semibold hover:underline text-white hover:text-ecoBlue-dark dark:text-gray-400 dark:hover:text-white ">{{ $t('register') }}</Link>
+            <Link :href="route('login')" class="font-semibold text-white hover:underline dark:text-gray-400 dark:hover:text-white">{{ $t('login') }}</Link>
+            <Link v-if="!$page.props.auth.user" :href="route('register')" class="ms-4 font-semibold hover:underline text-white  dark:text-gray-400 dark:hover:text-white ">{{ $t('register') }}</Link>
         </template>
     </div>
   </div>

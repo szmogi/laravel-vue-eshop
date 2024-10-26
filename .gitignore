@@ -3,6 +3,8 @@
 /public/build
 /public/hot
 /public/storage
+/public/villages/
+/public/villages/*
 /storage/*.key
 /vendor
 .env

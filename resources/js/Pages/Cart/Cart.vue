@@ -46,7 +46,7 @@ const setQuantity = (id, quantity) => {
                         <div class="flex flex-col">
                             <div v-for="(item, index) in slotProps.items" :key="index">
                                 <div class="flex flex-col relative sm:flex-row sm:items-center p-6 gap-4" :class="{ 'border-t border-surface-200 dark:border-surface-700': index !== 0 }">
-                                    <div class="md:w-40 relative">
+                                    <div class="md:w-40 object-fill relative">
                                         <img class="block xl:block mx-auto rounded w-full" src="/default-product.jpg" :alt="item.name" />
                                         <div class="absolute bg-black/70 rounded-border" style="left: 4px; top: 4px">
                                             <Tag :value="item.inventoryStatus ? $t('stock') : $t('maxStock')" :severity="getSeverity(item)"></Tag>
@@ -73,7 +73,7 @@ const setQuantity = (id, quantity) => {
                                         </div>
 
                                         <div class="flex flex-col md:items-end gap-8">
-                                            <span class="text-xl font-semibold">${{ item.price }}</span>
+                                            <span class="text-xl font-semibold">€{{ item.price }}</span>
                                             <div class="flex flex-row-reverse md:flex-row gap-2 absolute top-2 right-2">
                                                  <Button class="text-sm py-1 px-1" type="danger">
                                                      X
@@ -97,7 +97,7 @@ const setQuantity = (id, quantity) => {
                 </div>
                 <div class="flex mt-4 justify-end items-end gap-3">
                     <Link class="w-4/12" :href="route('cart.checkout')" >
-                        <Button class="bg-ecoBlue w-full font-medium text-3xl text-white hover:bg-ecoBlue-light rounded-md py-4 mx-1 px-4">
+                        <Button class="bg-ecoBlue w-full font-medium text-3xl text-white hover:bg-ecoBlue-dark rounded-md py-4 mx-1 px-4">
                             {{ $t('buyNow') }}
                         </Button>
                     </Link>
