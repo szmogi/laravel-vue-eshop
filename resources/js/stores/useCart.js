@@ -84,9 +84,6 @@ export const useCartStore = defineStore('cart', {
             });
         },
 
-
-
-
         async getShippingRates() {
             await axios.get(route('shipping.rates')).then(response => {
                 this.setShippingRates(response.data);

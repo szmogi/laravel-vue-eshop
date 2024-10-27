@@ -31,6 +31,11 @@ class CartController extends Controller
         $this->vat = env('SHOP_VAT');
     }
 
+    /**
+     * @return array
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
     private function getCartContent()
     {
         $this->cart = session()->get('cart', []);
@@ -55,7 +60,11 @@ class CartController extends Controller
 
         }
 
-        return array('cart' => $this->cart, 'totalSum' => round($this->totalSum, 2), 'noVat' => $noVat);
+        return array('cart' => $this->cart,
+            'totalSum' => round($this->totalSum, 2),
+            'noVat' => $noVat,
+            'sessionId' => session()->getId(),
+        );
     }
 
     /**

@@ -31,7 +31,7 @@ export const translation = {
         secondStep: 'Second step',
         thirdStep: 'Third step',
         checkoutTitle: 'Checkout',
-        completeTitle: 'Complete',
+        completeTitle: 'We are processing your order!',
         bannerTitle: 'Welcome to our shop!',
         bannerDescription: 'Find the right product exactly tailored to your needs!',
         cartList: 'Shopping cart',
@@ -70,6 +70,9 @@ export const translation = {
         currencyType: 'Select currency',
         invalidPhone: 'Invalid phone number',
         backButton: 'Back',
+        orderId: 'Order ID',
+        itemsList: 'Items list',
+        orderDate: 'Order date',
     },
     sk: {
         welcome: 'Vyhľadajte ten správny produkt presne na mieru vašim potrebám!',
@@ -102,7 +105,7 @@ export const translation = {
         secondStep: 'Druhý krok',
         thirdStep: 'Tretí krok',
         checkoutTitle: 'Zaplatiť',
-        completeTitle: 'Dokončiť',
+        completeTitle: 'Dakujeme Vám za váš nákup!',
         bannerTitle: 'Vitajte v našom obchode!',
         bannerDescription: 'Vyhľadajte ten správny produkt presne na mieru vašim potrebám!',
         cartList: 'Nákupný košík',
@@ -141,6 +144,9 @@ export const translation = {
         currencyType: 'Vyberte menu',
         invalidPhone: 'Neplatné telefónne číslo',
         backButton: 'Späť',
+        orderId: 'ID objednávky',
+        itemsList: 'Zoznam položiek',
+        orderDate: 'Dátum objednávky',
     },
 };
 

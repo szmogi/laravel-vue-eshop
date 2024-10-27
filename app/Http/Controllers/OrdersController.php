@@ -3,10 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 
 class OrdersController extends Controller
 {
+
+    protected $user = null;
+    protected $order = null;
+
+    protected $status = [
+        'pending',
+        'completed',
+        'canceled',
+        'refunded',
+    ];
+
+    public function __construct()
+    {
+        $this->user = ! auth()->check() ? null : auth()->user();
+    }
+
     // Získaj všetky objednávky
     public function index()
     {
@@ -16,20 +33,43 @@ class OrdersController extends Controller
     // Vytvor novú objednávku
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'total' => 'required|numeric',
-            'status' => 'required|string',
-        ]);
+        $request->order['createdAt'] = time();
+        $request->order['date'] = date('d.m.Y h:i:s', time());
+        $order = [
+            'user_id' => !empty($this->user) ? $this->user->id : null,
+            'total' => $request->order['total'],
+            'status' => 'pending',
+            'data' => json_encode($request->order),
+        ];
 
-        return Order::createOrder($validated);
+        $this->order = Order::createOrder($order);
+        if($this->order) {
+            foreach ($request->order['orderItems'] as $item) {
+                $item['order_id'] = $this->order->id;
+                OrderItem::createOrderItem($item);
+            }
+
+            $this->order->updateOrder(['status' => 'completed']);
+            return response()->json(['success' => 'Order created successfully!', 'order' => $request->order, 'orderId' => $this->order->id]);
+        }
+
+        return response()->json(['error' => 'Order creation failed!', 'order' => []]);
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder[]
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
     // Získaj konkrétnu objednávku
-    public function show($id)
+    public function show($id): \Illuminate\Database\Eloquent\Builder|array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
     {
-        return Order::with('items.product')->findOrFail($id);
+        $this->order = Order::with('items.product')->findOrFail($id);
+        $this->order->data = json_decode($this->order->data);
+        return $this->order;
     }
+
 
     // Aktualizuj existujúcu objednávku
     public function update(Request $request, $id)

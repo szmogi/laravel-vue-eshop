@@ -95,7 +95,10 @@ const setQuantity = (id, quantity) => {
                         {{ $t('noVat') }}: {{ useCar.noVat }} €
                     </div>
                 </div>
-                <div class="flex mt-4 justify-end items-end gap-3">
+                <div class="flex mt-4 justify-between items-center gap-3">
+                    <Link class="w-2/12 bg-ecoGreen-light text-white rounded flex justify-center items-center hover:bg-ecoGreen text-md uppercase h-12" :href="route('home')">
+                        {{ $t('backButton') }}
+                    </Link>
                     <Link class="w-4/12" :href="route('cart.checkout')" >
                         <Button class="bg-ecoBlue w-full font-medium text-3xl text-white hover:bg-ecoBlue-dark rounded-md py-4 mx-1 px-4">
                             {{ $t('buyNow') }}

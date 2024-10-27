@@ -9,9 +9,10 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Cudzí kľúč na užívateľa (ak máš tabuľku users)
+            $table->foreignId('user_id')->nullable(); // Cudzí kľúč na užívateľa (ak máš tabuľku users)
             $table->decimal('total', 10, 2); // Celková suma objednávky
             $table->string('status'); // Stav objednávky (napr. 'pending', 'completed')
+            $table->json('data')->nullable(); // Pridanie stĺpca pre serializované údaje
             $table->timestamps();
         });
     }

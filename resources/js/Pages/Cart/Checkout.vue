@@ -3,9 +3,15 @@ import { Head, Link } from '@inertiajs/vue3';
 import PageLayout from '@/Layouts/PageLayout.vue';
 import CartStep from '@/Components/CartStep.vue';
 import {onMounted, reactive, ref , watch} from "vue";
+import { router } from '@inertiajs/vue3';
+
 import { useCartStore } from "@/stores/useCart.js";
 const useCar = useCartStore();
 useCar.getVillages();
+
+import { useOrderStore } from "@/stores/useOrder.js";
+const useOrder = useOrderStore();
+
 import axios from "axios";
 import Button from "@/Components/Button.vue";
 import SmallCart from "@/Components/SmallCart.vue";
@@ -15,17 +21,17 @@ defineProps({
 });
 
 const form = reactive({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
+    name: 'tester fester',
+    email: 'tester@fester.cz',
+    phone: '+420777777777',
+    address: 'na rozcestí',
+    city: 'brno',
     shippingMethod: null,
     paymentMethod: null,
     isCompany: false,
     companyName: '',
     vatNumber: '',
-    zipCode: '',
+    zipCode: '93201',
     currencyType: null,
 });
 
@@ -65,14 +71,14 @@ const calculateTotal = () => {
 
 const convertTocalCurrency = async () => {
     try {
-        let response = JSON.parse(sessionStorage.getItem('rate')).rates;
+        let response = JSON.parse(sessionStorage.getItem('rate'));
         if(!response) {
             response = await axios.get(`/api/proxy/exchangerate`);
             sessionStorage.setItem('rate', JSON.stringify(response.data));
-            response = response.data.rates;
+            response = response.data;
         }
-        const rateUSD = response.USD;
-        const rateCzk = response.CZK;
+        const rateUSD = response.rates.USD;
+        const rateCzk = response.rates.CZK;
         totalInUSD.value = (total.value * rateUSD).toFixed(2);
         totalInCzk.value = (total.value * rateCzk).toFixed(2);
     } catch (error) {
@@ -81,15 +87,16 @@ const convertTocalCurrency = async () => {
 };
 
 const submitOrder = async () => {
-    console.log(form);
-
     if(valPhone.value) {
-      /*  try {
-      const response = await axios.post('/orders', form);
-      console.log('Order submitted', response);
-      } catch (error) {
-          console.error('Order submission failed', error);
-      }*/
+      form.totalInUSD = totalInUSD.value;
+      form.totalInCzk = totalInCzk.value;
+      form.total = total.value;
+      form.orderItems = useCar.cart;
+      form.noVat = noVat.value;
+      useOrder.createOrder(form)
+   } else {
+        console.log('Invalid phone number');
+        valPhone.value = true;
     }
 };
 
@@ -135,6 +142,13 @@ watch(() => useCar.cart, () => {
     }
 });
 
+watch(() => useOrder.orderId, () => {
+    if(useOrder.orderId > 0) {
+        sessionStorage.setItem('order_id_complete', useOrder.orderId);
+        router.get(route('cart.complete'));
+    }
+});
+
 </script>
 <template>
     <Head title="Checkout" />
@@ -175,6 +189,7 @@ watch(() => useCar.cart, () => {
                                @change="calculateCurrency(currency.name)"
                                :checked="currency.active"
                                required
+                               name="currencyType"
                            />
                            <div class="w-4 mr-2 mb-0.5 h-4 border border-stone-400 rounded-md peer-checked:bg-ecoBlue peer-checked:border-ecoBlue flex items-center justify-center transition duration-200">
                                <!-- Checkmark (conditionally shown) -->
@@ -195,6 +210,7 @@ watch(() => useCar.cart, () => {
                             :placeholder="$t('enterName')"
                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-ecoBlue"
                             required
+                            name="name"
                         />
                     </div>
                     <div class="mb-4">
@@ -206,6 +222,7 @@ watch(() => useCar.cart, () => {
                             :placeholder="$t('enterEmail')"
                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-ecoBlue"
                             required
+                            name="email"
                         />
                     </div>
                     <div class="mb-4">
@@ -221,6 +238,7 @@ watch(() => useCar.cart, () => {
                             :class="{ 'border-red-500': !valPhone }"
                             required
                             @blur="validatePhone(form.phone)"
+                            name="phone"
                         />
                     </div>
                     <!-- Shipping Address -->
@@ -233,6 +251,7 @@ watch(() => useCar.cart, () => {
                             :placeholder="$t('enterAddress')"
                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-ecoBlue"
                             required
+                            name="address"
                         />
                     </div>
                    <!-- Shipping Address -->
@@ -246,6 +265,7 @@ watch(() => useCar.cart, () => {
                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-ecoBlue"
                            required
                            @input="useCar.searchVillage(form.zipCode)"
+                           name="zipCode"
                        />
                        <div v-if="useCar.villageResult.length > 0" class="flex flex-row w-full mt-1 justify-start flex-wrap  items-center">
                            <div v-for="village in useCar.villageResult" :key="village.id" class="flex flex-row py-1 items-center">
@@ -262,6 +282,7 @@ watch(() => useCar.cart, () => {
                             :placeholder="$t('enterCity')"
                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-ecoBlue"
                             required
+                            name="city"
                         />
                     </div>
 
@@ -272,8 +293,8 @@ watch(() => useCar.cart, () => {
                                 type="checkbox"
                                 v-model="form.isCompany"
                                 class="hidden peer"
-                                required
                             />
+
                             <div class="w-4 mr-2 mb-0.5 h-4 border border-stone-400 rounded-md peer-checked:bg-ecoBlue peer-checked:border-ecoBlue flex items-center justify-center transition duration-200">
                                 <!-- Checkmark (conditionally shown) -->
                                 <svg class="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -295,6 +316,7 @@ watch(() => useCar.cart, () => {
                                 placeholder="Company Name"
                                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
+                                name="companyName"
                             />
                         </div>
                         <div class="mb-4">
@@ -306,6 +328,7 @@ watch(() => useCar.cart, () => {
                                 placeholder="VAT Number"
                                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
+                                name="vatNumber"
                             />
                         </div>
                     </div>
@@ -321,6 +344,7 @@ watch(() => useCar.cart, () => {
                                 class="hidden peer"
                                 @change="calculateShipping"
                                 required
+                                name="shippingMethod"
                             />
                             <div class="w-4 mr-2 mb-0.5 h-4 border border-stone-400 rounded-md peer-checked:bg-ecoBlue peer-checked:border-ecoBlue flex items-center justify-center transition duration-200">
                                 <!-- Checkmark (conditionally shown) -->
@@ -341,6 +365,7 @@ watch(() => useCar.cart, () => {
                                 v-model="form.paymentMethod"
                                 :value="method"
                                 class="hidden peer"
+                                name="paymentMethod"
                             />
                             <!-- Custom checkbox -->
                             <div class="w-4 mr-2 mb-0.5 h-4 border border-stone-400 rounded-md peer-checked:bg-ecoBlue peer-checked:border-ecoBlue flex items-center justify-center transition duration-200">

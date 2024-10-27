@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\OtherController;
 use App\Http\Controllers\ProductsController;
 use App\Models\Product;
@@ -51,6 +52,9 @@ Route::get('/checkout', function () {
 Route::get('/orders', function () {
     return Inertia::render('/Orders/Orders');
 })->name('orders')->middleware('auth');
+
+Route::post('/order/add', [OrdersController::class, 'store'])->name('order.add');
+Route::get('/order/show/{id}', [OrdersController::class, 'show'])->name('order.show');
 
 // Dashboard
 Route::middleware([
