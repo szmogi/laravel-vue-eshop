@@ -73,6 +73,7 @@ export const translation = {
         orderId: 'Order ID',
         itemsList: 'Items list',
         orderDate: 'Order date',
+        welcomeShort: 'Welcome',
     },
     sk: {
         welcome: 'Vyhľadajte ten správny produkt presne na mieru vašim potrebám!',
@@ -147,6 +148,7 @@ export const translation = {
         orderId: 'ID objednávky',
         itemsList: 'Zoznam položiek',
         orderDate: 'Dátum objednávky',
+        welcomeShort: 'Vitaj',
     },
 };
 

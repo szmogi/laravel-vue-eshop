@@ -2,11 +2,11 @@
     <nav>
         <ul class="flex w-8/12 justify-between text-ecoBlue-dark items-center mx-auto">
             <li :class="{ active: step === 1 }"><Link :href="route('cart.page')">
-                <span :class="step === 2 ? 'bg-ecoBlue-dark' : 'bg-ecoBlue'" class=" text-2xl rounded-full flex justify-center items-center text-white
+                <span :class="step >= 1 ? 'bg-ecoBlue-dark' : 'bg-ecoBlue'" class=" text-2xl rounded-full flex justify-center items-center text-white
                  w-12 h-12">1</span></Link></li>
-            <li :class="step === 2 ? 'bg-ecoBlue-dark' : 'bg-ecoBlue-light'" class="middle-line w-3/12 h-[0.5px] p-0"></li>
+            <li :class="step >= 2 ? 'bg-ecoBlue-dark' : 'bg-ecoBlue-light'" class="middle-line w-3/12 h-[0.5px] p-0"></li>
             <li :class="{ active: step === 2 }"><Link :href="route('cart.checkout')">
-                <span :class="step === 2 ? 'bg-ecoBlue-dark' : 'bg-ecoBlue'" class=" text-2xl rounded-full flex justify-center items-center text-white
+                <span :class="step >= 2 ? 'bg-ecoBlue-dark' : 'bg-ecoBlue'" class=" text-2xl rounded-full flex justify-center items-center text-white
                  w-12 h-12">2</span>
             </Link></li>
             <li :class="step === 3 ? 'bg-ecoBlue-dark' : 'bg-ecoBlue-light'"  class="middle-line w-3/12 h-[0.5px] p-0"></li>

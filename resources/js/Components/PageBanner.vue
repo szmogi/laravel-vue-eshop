@@ -1,5 +1,5 @@
 <template>
-    <div class="banner-slider min-w-full">
+    <div :class="!loaded ? 'animate-pulse bg-ecoBlue-light' : '' " class="banner-slider   dark:bg-gray-900 min-w-full">
         <swiper
             :slides-per-view="1"
             :space-between="30"
@@ -10,7 +10,7 @@
             :modules="modules"
         >
             <swiper-slide v-for="(slide, index) in slides" :key="index">
-                <img class="h-[800px] w-full object-cover" :src="slide.image" alt="" />
+                <img class="h-[800px] w-full object-cover" @load="loaded = true" :src="slide.image" alt="" />
                 <div class="slide-content top-[40%] ">
                     <h2 class="text-3xl mb-6 font-bold tracking-tight text-white sm:text-6xl">{{ $t('bannerTitle') }}</h2>
                     <h2 class="text-2xl mb-2 font-bold tracking-tight text-white sm:text-3xl">{{ $t('bannerDescription') }}</h2>
@@ -42,15 +42,16 @@ export default {
         return {
             slides: [
                 {
-                    image: '/paper-bags-different-colors-blue-background-top-view-min.jpg',
+                    image: '/banner_bg.webp',
                 },
                 {
-                    image: '/paper-bags-different-colors-blue-background-top-view-min.jpg',
+                    image: '/banner_bg.webp',
                 },
                 {
-                    image: '/paper-bags-different-colors-blue-background-top-view-min.jpg',
+                    image: '/banner_bg.webp',
                 }
             ],
+            loaded: false,
             modules: [Navigation, Pagination , Autoplay],
         };
     },

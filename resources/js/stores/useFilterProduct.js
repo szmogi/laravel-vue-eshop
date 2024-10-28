@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
+// Define store
 export const useFilterProduct = defineStore('filterProduct', {
     state: () => ({
         products: [],
@@ -25,11 +26,13 @@ export const useFilterProduct = defineStore('filterProduct', {
             this.sizes = $filterContent.sizes;
         },
 
+        // Set new products
         setNewProducts(products) {
             this.products = products.products;
             this.resultsCount = products.count;
         },
 
+        // Get filter content
         async getFilterContent( category, color, size) {
             await axios.get(route('products.filter'), {
                 params: {

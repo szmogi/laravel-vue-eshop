@@ -16,6 +16,7 @@ const variations = ref();
 const uniqueProducts = ref();
 const quantity = ref(1);
 const maxQuantity = ref(false);
+const loaded = ref(false);
 
 onBeforeMount(() => {
     product.value = props.product;
@@ -73,8 +74,8 @@ const price = computed(() => {
 
 </script>
 <template>
-    <div class="border w-full bg-white rounded hover:border-green-800 hover:transform hover:scale-105 duration-100 border-gray-300 hover:shadow-green-800  selection:bg-red-500 selection:text-white">
-        <img src="/default-product.jpg" alt="product image" class="w-full h-40 object-cover" />
+    <div :class="!loaded ? 'animate-pulse bg-ecoBlue-light' : 'bg-white' " class="border w-full rounded hover:border-green-800 hover:transform hover:scale-105 duration-100 border-gray-300 hover:shadow-green-800  selection:bg-red-500 selection:text-white">
+        <img @load="loaded = true" src="/default-product.jpg" alt="product image" class="w-full h-40 object-cover" />
         <div class="p-4 h-30 flex flex-col w-full justify-between">
             <h2 class="text-lg mb-2 uppercase font-bold">{{ product.name }}</h2>
             <p class="h-12 overflow-hidden text-ellipsis">{{ product.description }}</p>

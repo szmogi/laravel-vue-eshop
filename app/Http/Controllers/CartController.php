@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CartController extends Controller
@@ -23,12 +24,16 @@ class CartController extends Controller
     // protected $noVat = 0;
     protected $vat = 0;
 
+    // protected $currentUser = null;
+    protected $currentUser = null;
+
 
     public function __construct()
     {
-        $this->user = ! auth()->check() ? null : auth()->user();
+        $this->user = !auth()->check() ? null : auth()->user();
         $this->cart = $this->getCartContent();
         $this->vat = env('SHOP_VAT');
+        $this->currentUser = Auth::user();
     }
 
     /**
@@ -36,8 +41,9 @@ class CartController extends Controller
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    private function getCartContent()
+    public function getCartContent()
     {
+        $this->currentUser = Auth::user();
         $this->cart = session()->get('cart', []);
         $noVat = 0;
         $this->totalSum = 0;
@@ -64,6 +70,7 @@ class CartController extends Controller
             'totalSum' => round($this->totalSum, 2),
             'noVat' => $noVat,
             'sessionId' => session()->getId(),
+            'user' => $this->currentUser,
         );
     }
 
@@ -131,7 +138,7 @@ class CartController extends Controller
     {
         // Retrieve cart from session or create a new one if it doesn't exist
         $cart = session()->get('cart', []);
-
+        $this->currentUser = Auth::user();
         // Item details (for example, from request)
         $id = $request->input('id');
         $productId = $request->input('product_id');
@@ -150,6 +157,7 @@ class CartController extends Controller
                 'price' => $price,
                 'quantity' => $quantity,
                 'product_id' => $productId,
+                'user' => $this->currentUser,
             ];
         }
 

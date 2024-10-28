@@ -1,15 +1,21 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link , usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-
 import ProductList from '@/Pages/Products/ProductList.vue';
-import SmallCart from '@/Components/SmallCart.vue';
 import PageLayout from '@/Layouts/PageLayout.vue';
-
+import { useUserStore } from "@/stores/useUserStore.js";
 import { useI18n } from 'vue-i18n';
 import ProductFilter from "@/Components/ProductFilter.vue";
+
 const { t, locale } = useI18n();
 const currentLocale = computed(() => locale.value);
+
+// Získajte $page props
+const page = usePage();
+
+const useUser = useUserStore();
+useUser.setUser(page.props.auth.user);
+useUser.ifAdmin();
 
 const languages = [
     { code: 'sk', label: 'SK' },

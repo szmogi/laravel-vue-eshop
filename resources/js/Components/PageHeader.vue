@@ -15,11 +15,12 @@
         </div>
     </div>
     <div class="flex items-center gap-3">
+        <p  v-if="$page.props.auth.user"  class="text-white px-4">{{ $t('welcomeShort')}}   {{$page.props.auth.user.name}}</p>
+        <Link :href="'/'" class="font-semibold flex flex-row items-center hover:underline text-white mr-4  dark:text-gray-400 dark:hover:text-white">
+            <SmallCart class="opacity-100" />
+        </Link>
         <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="font-semibold hover:underline text-white  dark:text-gray-400 dark:hover:text-white ">{{ $t('orders') }}</Link>
         <template v-else>
-            <Link :href="'/'" class="font-semibold flex flex-row items-center hover:underline text-white mr-4  dark:text-gray-400 dark:hover:text-white">
-                <SmallCart class="opacity-100" />
-            </Link>
             <Link :href="route('login')" class="font-semibold text-white hover:underline dark:text-gray-400 dark:hover:text-white">{{ $t('login') }}</Link>
             <Link v-if="!$page.props.auth.user" :href="route('register')" class="ms-4 font-semibold hover:underline text-white  dark:text-gray-400 dark:hover:text-white ">{{ $t('register') }}</Link>
         </template>
