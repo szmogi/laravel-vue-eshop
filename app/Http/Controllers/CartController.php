@@ -27,6 +27,8 @@ class CartController extends Controller
     // protected $currentUser = null;
     protected $currentUser = null;
 
+    protected $userId = null;
+
 
     public function __construct()
     {
@@ -34,6 +36,7 @@ class CartController extends Controller
         $this->cart = $this->getCartContent();
         $this->vat = env('SHOP_VAT');
         $this->currentUser = Auth::user();
+        $this->userId = Auth::id();
     }
 
     /**
@@ -44,7 +47,7 @@ class CartController extends Controller
     public function getCartContent()
     {
         $this->currentUser = Auth::user();
-        $this->cart = session()->get('cart', []);
+        $this->cart = $this->getSessionCart();
         $noVat = 0;
         $this->totalSum = 0;
         if(!empty($this->cart)) {
@@ -72,6 +75,39 @@ class CartController extends Controller
             'sessionId' => session()->getId(),
             'user' => $this->currentUser,
         );
+    }
+
+
+    /**
+     * @return array
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function getSessionCart()
+    {
+        if(!empty(Auth::id())) {
+            $this->userId = Auth::id();
+            $cart = session()->get('cart-'.$this->userId, []);
+            return $cart;
+        } else {
+            $cart = session()->get('cart', []);
+            return $cart;
+        }
+    }
+
+    /**
+     * @return void
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function setSessionCart(): void
+    {
+        if(!empty(Auth::id())) {
+            $this->userId = Auth::id();
+            session()->put('cart-'.$this->userId, $this->cart);
+        } else {
+            session()->put('cart', $this->cart);
+        }
     }
 
     /**
@@ -102,7 +138,7 @@ class CartController extends Controller
      */
     public function checkout()
     {
-        $cart = session()->get('cart', []);
+        $cart = $this->getSessionCart();
         return Inertia::render('Cart/Checkout', [
             'cartList' => $cart,
             'step' => 2,
@@ -119,7 +155,7 @@ class CartController extends Controller
      */
     public function complete()
     {
-        $cart = session()->get('cart', []);
+        $cart = $this->getSessionCart();
         return Inertia::render('Cart/Complete', [
             'cartList' => $cart,
             'step' => 3,
@@ -137,8 +173,11 @@ class CartController extends Controller
     public function addToCart(Request $request)
     {
         // Retrieve cart from session or create a new one if it doesn't exist
-        $cart = session()->get('cart', []);
-        $this->currentUser = Auth::user();
+        $cart = $this->getSessionCart();
+
+        if(!empty(Auth::id())) {
+            $this->userId = Auth::id();
+        }
         // Item details (for example, from request)
         $id = $request->input('id');
         $productId = $request->input('product_id');
@@ -157,12 +196,13 @@ class CartController extends Controller
                 'price' => $price,
                 'quantity' => $quantity,
                 'product_id' => $productId,
-                'user' => $this->currentUser,
+                'user' => $this->userId,
             ];
         }
 
         // Save updated cart in session
-        session()->put('cart', $cart);
+        $this->cart = $cart;
+        $this->setSessionCart();
         $cart = $this->getCartContent();
 
         return response()->json(['success' => 'Item added to cart successfully!', 'cart' => $cart]);
@@ -221,11 +261,12 @@ class CartController extends Controller
     public function removeItem(Request $request)
     {
         $id = $request->input('id');
-        $cart = session()->get('cart', []);
+        $cart = $this->getSessionCart();
 
         if (isset($cart[$id])) {
             unset($cart[$id]);
-            session()->put('cart', $cart);
+            $this->cart = $cart;
+            $this->setSessionCart();
         }
 
         return response()->json(['success' => 'Item removed from cart successfully!', 'cart' => $cart]);
@@ -239,7 +280,8 @@ class CartController extends Controller
      */
     public function clearCart()
     {
-        session()->forget('cart');
+        $this->cart = [];
+        $this->setSessionCart();
         return response()->json([]);
     }
 }

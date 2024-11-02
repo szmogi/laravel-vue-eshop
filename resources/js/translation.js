@@ -74,6 +74,9 @@ export const translation = {
         itemsList: 'Items list',
         orderDate: 'Order date',
         welcomeShort: 'Welcome',
+        home: 'Home',
+        shop: 'Shop',
+        nextShopping: 'Next shopping',
     },
     sk: {
         welcome: 'Vyhľadajte ten správny produkt presne na mieru vašim potrebám!',
@@ -149,6 +152,9 @@ export const translation = {
         itemsList: 'Zoznam položiek',
         orderDate: 'Dátum objednávky',
         welcomeShort: 'Vitaj',
+        home: 'Domov',
+        shop: 'Obchod',
+        nextShopping: 'Další nákup',
     },
 };
 

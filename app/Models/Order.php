@@ -34,4 +34,21 @@ class Order extends Model
     {
         $this->delete();
     }
+
+
+    /**
+     * Prístupník pre formátovanie created_at.
+     */
+    public function getCreatedAtAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->format('d.m.Y H:i'); // Nastav formát podľa potreby
+    }
+
+    /**
+     * Prístupník pre formátovanie updated_at, ak je potrebné.
+     */
+    public function getUpdatedAtAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->format('d.m.Y H:i'); // Nastav formát podľa potreby
+    }
 }

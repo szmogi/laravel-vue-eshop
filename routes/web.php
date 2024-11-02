@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\OtherController;
 use App\Http\Controllers\ProductsController;
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -63,7 +64,10 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
+        $orders = Order::with('items.product')->where('user_id', auth()->id())->get()->sortBy('created_at');
+        return Inertia::render('Dashboard', [
+            'orders' => $orders,
+        ]);
     })->name('dashboard');
 });
 

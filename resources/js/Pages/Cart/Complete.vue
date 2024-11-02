@@ -7,6 +7,7 @@ import { onMounted, reactive, ref , watch} from "vue";
 import { useOrderStore } from "@/stores/useOrder.js";
 const useOrder = useOrderStore();
 
+
 const orderId = ref(sessionStorage.getItem('order_id_complete'));
 
 defineProps({
@@ -80,6 +81,14 @@ onMounted(() => {
                                 <div v-if="useOrder.order.currencyType === 'USD'" class="text-2xl py-1 font-bold text-ecoBlue-dark dark:text-gray-100">{{ $t('total') }}: {{ useOrder.order.total }} $</div>
                             </div>
                         </div>
+                    </div>
+                    <div class="flex flex-row border-t-2 py-4 justify-between items-center">
+                        <Link class="w-4/12 bg-ecoGreen-light text-white rounded flex justify-center items-center hover:bg-ecoGreen text-md uppercase h-12" :href="route('home')">
+                            {{ $t('nextShopping') }}
+                        </Link>
+                        <Link :href="route('cart.page')" class="w-4/12 bg-ecoBlue text-white rounded flex justify-center items-center hover:bg-ecoBlue-light text-md uppercase h-12">
+                            {{ $t('orders') }}
+                        </Link>
                     </div>
                 </div>
             </div>

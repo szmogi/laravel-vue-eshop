@@ -16,6 +16,7 @@ const props = defineProps({
     cartList: Object,
     step: Number,
 });
+
 const quantity = ref(0);
 
 const getSeverity = (item) => {

@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrdersController extends Controller
 {
 
     protected $user = null;
+
     protected $order = null;
+
+    protected $userId = null;
 
     protected $status = [
         'pending',
@@ -22,6 +26,7 @@ class OrdersController extends Controller
     public function __construct()
     {
         $this->user = ! auth()->check() ? null : auth()->user();
+        $this->orderId = !empty(Auth::id()) ? Auth::id() : null;
     }
 
     // Získaj všetky objednávky
@@ -33,10 +38,10 @@ class OrdersController extends Controller
     // Vytvor novú objednávku
     public function store(Request $request)
     {
-        $request->order['createdAt'] = time();
-        $request->order['date'] = date('d.m.Y h:i:s', time());
+        $this->userId = !empty(Auth::id()) ? Auth::id() : null;
+
         $order = [
-            'user_id' => !empty($this->user) ? $this->user->id : null,
+            'user_id' => $this->userId,
             'total' => $request->order['total'],
             'status' => 'pending',
             'data' => json_encode($request->order),

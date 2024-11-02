@@ -92,7 +92,7 @@ const submitOrder = async () => {
       form.totalInCzk = totalInCzk.value;
       form.total = total.value;
       form.orderItems = useCar.cart;
-      form.noVat = noVat.value;
+      form.noVat = useCar.noVat;
       useOrder.createOrder(form)
    } else {
         console.log('Invalid phone number');
@@ -409,6 +409,8 @@ watch(() => useOrder.orderId, () => {
                                 <p class="text-gray-700 font-bold">{{ $t('shippingCost') }}: <span class="text-gray-900">{{ shippingCost }} EUR</span></p>
                                 <p v-if="useCar.currencyType[0].active" class="text-gray-700 font-bold">
                                     {{ $t('total') }}: <span class="text-gray-900">{{ total }} EUR</span></p>
+                                <p v-if="useCar.currencyType[0].active" class="text-gray-700 font-bold">
+                                    {{ $t('noVat') }}: <span class="text-gray-900">{{ useCar.noVat }} EUR</span></p>
                                 <p v-if="useCar.currencyType[1].active" class="text-gray-700 font-bold">{{ $t('totalInCzk') }}: <span class="text-gray-900">{{ totalInCzk }} CZK</span></p>
                                 <p v-if="useCar.currencyType[2].active" class="text-gray-700 font-bold">{{ $t('totalInUSD') }}: <span class="text-gray-900">{{ totalInUSD }} USD</span></p>
                             </div>
