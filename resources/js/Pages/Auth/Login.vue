@@ -24,7 +24,16 @@ const submit = () => {
         ...data,
         remember: form.remember ? 'on' : '',
     })).post(route('login'), {
-        onFinish: () => form.reset('password'),
+        onFinish: () => {
+            form.reset('password');
+            form.errors.password = '';
+        },
+        onSuccess: () => {
+            form.reset('password');
+            form.errors.password = '';
+            router.get(route('home'));
+        },
+        onError: () => form.errors.password = 'Invalid password',
     });
 };
 </script>

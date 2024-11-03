@@ -21,7 +21,7 @@
 <script setup>
 import PageHeader from "@/Components/PageHeader.vue";
 import PageBanner from "@/Components/PageBanner.vue";
-
+import 'primeicons/primeicons.css'
 defineProps({
     visibleBanner: {
         type: Boolean,

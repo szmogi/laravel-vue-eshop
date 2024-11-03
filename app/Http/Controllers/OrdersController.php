@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class OrdersController extends Controller
 {
@@ -17,10 +18,10 @@ class OrdersController extends Controller
     protected $userId = null;
 
     protected $status = [
-        'pending',
-        'completed',
-        'canceled',
-        'refunded',
+        'pending' => 'Pending',
+        'completed' => 'Completed',
+        'canceled' => 'Canceled',
+        'refunded' => 'Refunded',
     ];
 
     public function __construct()
@@ -61,18 +62,33 @@ class OrdersController extends Controller
         return response()->json(['error' => 'Order creation failed!', 'order' => []]);
     }
 
+
+    // Získaj konkrétnu objednávku
+
     /**
      * @param $id
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder[]
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @return \Inertia\Response
      */
-    // Získaj konkrétnu objednávku
-    public function show($id): \Illuminate\Database\Eloquent\Builder|array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+    public function show($id)
     {
         $this->order = Order::with('items.product')->findOrFail($id);
         $this->order->data = json_decode($this->order->data);
-        return $this->order;
+
+        return Inertia::render('Dashboard', [
+            'orders' => $this->order,
+            'tableOrders' => false,
+            'orderDetails' => true,
+        ]);
+    }
+
+    /**
+     * @return false|string
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function getStatusShow(): bool|string
+    {
+        return json_encode($this->status);
     }
 
 

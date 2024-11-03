@@ -56,6 +56,7 @@ Route::get('/orders', function () {
 
 Route::post('/order/add', [OrdersController::class, 'store'])->name('order.add');
 Route::get('/order/show/{id}', [OrdersController::class, 'show'])->name('order.show');
+Route::get('/order/status', [OrdersController::class, 'getStatusShow'])->name('order.status');
 
 // Dashboard
 Route::middleware([
@@ -67,6 +68,8 @@ Route::middleware([
         $orders = Order::with('items.product')->where('user_id', auth()->id())->get()->sortBy('created_at');
         return Inertia::render('Dashboard', [
             'orders' => $orders,
+            'tableOrders' => true,
+            'orderDetails' => false,
         ]);
     })->name('dashboard');
 });
