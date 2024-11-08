@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\OtherController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\SettingsController;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Foundation\Application;
@@ -93,7 +94,10 @@ Route::get('/products-filtered', [ProductsController::class, 'filterProducts'])-
 Route::get('/shipping-rates', [OtherController::class, 'getShippingRates'])->name('shipping.rates');
 Route::get('/payment-methods', [OtherController::class, 'getPaymentMethods'])->name('payment.methods');
 
-
+Route::get('/settings/eshop', [SettingsController::class, 'view'])->name('settings.eshop')->middleware('auth');
+Route::post('/settings/eshop/status', [SettingsController::class, 'settingsOrderStatus'])->name('settings.eshop.status')->middleware('auth');
+Route::post('/settings/eshop/payment-method', [SettingsController::class, 'settingsPaymentMethod'])->name('settings.eshop.payment-method')->middleware('auth');
+Route::post('/settings/eshop/shipping-method', [SettingsController::class, 'settingsShippingMethod'])->name('settings.eshop.shipping-method')->middleware('auth');
 
 
 Route::get('/api/proxy/exchangerate', function () {

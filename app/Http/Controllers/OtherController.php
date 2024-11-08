@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\Config;
 use App\Models\Size;
 use Illuminate\Http\Request;
 
@@ -24,40 +25,71 @@ class OtherController extends Controller
     }
 
 
-    function getShippingRates()
+    // Získajte shipping rates
+    public  function getShippingRates()
     {
-        //$shippingRates = ShippingRate::all();
 
-        $shippingRates = [
-            [
-                'id' => 1,
-                'name' => 'Standard Shipping',
-                'price' => 10,
-            ],
-            [
-                'id' => 2,
-                'name' => 'Express Shipping',
-                'price' => 20,
-            ],
-        ];
-        return response()->json($shippingRates);
+        $shippingRates = Config::where('key', 'eshop-shipping-method')->first();
+        if(!$shippingRates) {
+            $shippingRates = $this->defaultShippingMethod();
+        }
+        return response()->json($shippingRates->value);
     }
 
-    function getPaymentMethods()
+    // Získajte payment methods
+    public function getPaymentMethods()
     {
-        //$paymentMethods = PaymentMethod::all();
+        $paymentMethods = Config::where('key', 'eshop-payment-method')->first();
+
+        if(!$paymentMethods) {
+            $paymentMethods = $this->defaultPaymentMethod();
+        }
+
+        return response()->json($paymentMethods->value);
+    }
 
 
-         $paymentMethods = [
-            [
-                'id' => 1,
-                'name' => 'PayPal',
-            ],
-            [
-                'id' => 2,
-                'name' => 'Credit Card',
-            ],
-        ];
-        return response()->json($paymentMethods);
+    private function defaultPaymentMethod()
+    {
+        $paymentMethod = Config::where('key', 'eshop-payment-method')->first();
+        if(!$paymentMethod) {
+            $paymentMethod = Config::create([
+                'key' => 'eshop-payment-method',
+                'value' => [
+                    [
+                        'id' => 1,
+                        'name' => 'PayPal',
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'Credit Card',
+                    ],
+                ],
+            ]);
+        }
+        return $paymentMethod;
+    }
+
+    private function defaultShippingMethod()
+    {
+        $shippingMethod = Config::where('key', 'eshop-shipping-method')->first();
+        if(!$shippingMethod) {
+            $shippingMethod = Config::create([
+                'key' => 'eshop-shipping-method',
+                'value' => [
+                    [
+                        'id' => 1,
+                        'name' => 'Standard Shipping',
+                        'price' => 10,
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'Express Shipping',
+                        'price' => 20,
+                    ],
+                ],
+            ]);
+        }
+        return $shippingMethod;
     }
 }

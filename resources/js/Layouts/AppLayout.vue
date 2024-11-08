@@ -8,9 +8,18 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import 'primeicons/primeicons.css'
+import { usePage } from '@inertiajs/vue3';
+
+import { useUserStore } from '@/Stores/useUserStore';
+const userStore = useUserStore();
+// Získajte $page props
+const page = usePage();
 defineProps({
     title: String,
 });
+
+userStore.setUser(page.props.auth.user);
+userStore.ifAdmin();
 
 const showingNavigationDropdown = ref(false);
 
@@ -42,7 +51,7 @@ const logout = () => {
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('dashboard')">
+                                <Link :href="route('home')">
                                     <ApplicationMark class="block h-9 w-auto" />
                                 </Link>
                             </div>
@@ -143,9 +152,14 @@ const logout = () => {
                                             Profile
                                         </DropdownLink>
 
-                                        <DropdownLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')">
+                                        <DropdownLink v-if="$page.props.jetstream.hasApiFeatures && userStore.admin" :href="route('api-tokens.index')">
                                             API Tokens
                                         </DropdownLink>
+
+                                        <DropdownLink v-if="userStore.admin" :href="route('settings.eshop')">
+                                           Settings Eshop
+                                        </DropdownLink>
+
 
                                         <div class="border-t border-gray-200 dark:border-gray-600" />
 
