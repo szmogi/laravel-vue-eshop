@@ -6,8 +6,6 @@ import CartStep from '@/Components/CartStep.vue';
 import { onMounted, reactive, ref , watch} from "vue";
 import { useOrderStore } from "@/stores/useOrder.js";
 const useOrder = useOrderStore();
-
-
 const orderId = ref(sessionStorage.getItem('order_id_complete'));
 
 defineProps({

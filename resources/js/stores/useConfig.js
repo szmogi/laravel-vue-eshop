@@ -7,41 +7,81 @@ export const useConfigStore = defineStore('config', {
         status: [],
         paymentMethod: [],
         shippingMethod: [],
+        eshop: [],
     }),
     actions: {
         // Nastavenie vat
-        setVat(vat) {
-            this.vat = vat;
+        async setVat(vat) {
+            await axios.post(route('settings.eshop.vat'), {
+                vat: vat,
+            }).then(response => {
+                this.vat = response.data.vat;
+            });
+
         },
 
         // Nastavenie statusu objednávok
-        setStatus(status) {
-            this.status.push(status);
+        async setStatus(status) {
+            let $sendStatus = status.name;
+
+            if(status.id) {
+                $sendStatus = {name: status.name, id: status.id};
+            }
+
+            await axios.post(route('settings.eshop.status'), {
+                status: $sendStatus,
+            }).then(response => {
+                this.status = response.data;
+            });
         },
 
         // Nastavenie metód platby
-        setPaymentMethod(paymentMethod) {
-            this.paymentMethod.push(paymentMethod);
+        async setPaymentMethod(paymentMethod) {
+            await axios.post(route('settings.eshop.payment-method'), {
+                paymentMethod: {name: paymentMethod.name, id: paymentMethod.id},
+            }).then(response => {
+                console.log(response.data);
+                this.paymentMethod = response.data;
+            });
         },
 
         // Nastavenie dopravného spôsobu
-        setShippingMethod(shippingMethod) {
-            this.shippingMethod.push(shippingMethod);
+        async setShippingMethod(shippingMethod) {
+            await axios.post(route('settings.eshop.shipping-method'), {
+                shippingMethod: {name: shippingMethod.name, id: shippingMethod.id, price: shippingMethod.price},
+            }).then(response => {
+                this.shippingMethod = response.data;
+            });
         },
 
         // Odstránenie stavu
-        removeStatus(id) {
-            this.status = this.status.filter(status => status.id !== id);
+        removeStatus($remove) {
+            axios.post(route('settings.eshop.status'), {
+                status: $remove,
+                remove: true,
+            }).then(response => {
+                this.status = response.data;
+            });
         },
 
         // Odstránenie metódy platby
-        removePaymentMethod(id) {
-            this.paymentMethod = this.paymentMethod.filter(paymentMethod => paymentMethod.id !== id);
+        removePaymentMethod($remove) {
+            axios.post(route('settings.eshop.payment-method'), {
+                paymentMethod: {id: $remove.id},
+                remove: true,
+            }).then(response => {
+                this.paymentMethod = response.data;
+            });
         },
 
         // Odstránenie dopravného spôsobu
-        removeShippingMethod(id) {
-            this.shippingMethod = this.shippingMethod.filter(shippingMethod => shippingMethod.id !== id);
+        removeShippingMethod($remove) {
+            axios.post(route('settings.eshop.shipping-method'), {
+                shippingMethod: {id: $remove.id},
+                remove: true,
+            }).then(response => {
+                this.shippingMethod = response.data;
+            });
         },
 
         // Získa vat

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Config;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
@@ -66,13 +67,20 @@ class OrdersController extends Controller
     // Získaj konkrétnu objednávku
 
     /**
+     * @param Request $request
      * @param $id
-     * @return \Inertia\Response
+     * @return \Illuminate\Http\JsonResponse|\Inertia\Response
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
         $this->order = Order::with('items.product')->findOrFail($id);
         $this->order->data = json_decode($this->order->data);
+
+        $json = $request->query('json');
+
+        if(!empty($json)) {
+            return response()->json($this->order);
+        }
 
         return Inertia::render('Dashboard', [
             'orders' => $this->order,
@@ -88,7 +96,14 @@ class OrdersController extends Controller
      */
     public function getStatusShow(): bool|string
     {
-        return json_encode($this->status);
+        $status = Config::where('key', 'eshop-status')->first();
+        if(!$status) {
+            $status = Config::create([
+                'key' => 'eshop-status',
+                'value' => $this->status,
+            ]);
+        }
+        return response()->json($status->value);
     }
 
 

@@ -97,6 +97,8 @@ export const translation = {
         removeShippingMethod: 'Remove shipping method',
         shippingPrice: 'Price',
         add: 'Add',
+        title: 'Title',
+        company: 'Company',
     },
     sk: {
         welcome: 'Vyhľadajte ten správny produkt presne na mieru vašim potrebám!',
@@ -185,7 +187,7 @@ export const translation = {
         order: 'Objednávka',
         currency: 'Mena',
         shipping: 'Doručenie',
-        SettingsEshop: 'Nastavenia Eshop',
+        SettingsEshop: 'Nastavenia E-shopu',
         settingsVat: 'Nastavenie DPH',
         settingsStatus: 'Nastavenie stavu',
         settingsPaymentMethod: 'Nastavenie metóda platby',
@@ -195,6 +197,8 @@ export const translation = {
         removeShippingMethod: 'Odstrániť dopravný spôsob',
         shippingPrice: 'Cena',
         add: 'Pridať',
+        title: 'Názov',
+        company: 'Spoločnosť',
     },
 };
 

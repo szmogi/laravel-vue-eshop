@@ -39,8 +39,16 @@ export const useOrderStore = defineStore('order', {
 
         // Nastavenie ceny bez DPH
         setNoVat() {
-            let noVat = this.order.total / this.rates;
-            this.noVat = noVat.toFixed(2);
+            if(this.order.total === 0) {
+                this.noVat = 0;
+                return;
+            }
+            if(this.order.currencyType === null || this.order.currencyType === 'EUR') {
+                let noVat = this.order.total / this.rates;
+                this.noVat = noVat.toFixed(2);
+            } else {
+                this.noVat = this.order.total;
+            }
         },
 
        // Vytvorenie objednávky
@@ -56,7 +64,7 @@ export const useOrderStore = defineStore('order', {
 
         // Získa objednávku
         async getOrder(id) {
-            await axios.get(route('order.show', id)).then(response => {
+            await axios.get(route('order.show', id), { params: { json: true } }).then(response => {
                 this.setOrder(response.data.data);
                 this.orderId = response.data.id;
                 this.setNoVat();
