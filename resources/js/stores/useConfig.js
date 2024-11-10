@@ -38,9 +38,8 @@ export const useConfigStore = defineStore('config', {
         // Nastavenie metód platby
         async setPaymentMethod(paymentMethod) {
             await axios.post(route('settings.eshop.payment-method'), {
-                paymentMethod: {name: paymentMethod.name, id: paymentMethod.id},
+                paymentMethod: {name: paymentMethod.name, id: paymentMethod.id , nameEn: paymentMethod.nameEn, description: paymentMethod.description, descriptionEn: paymentMethod.descriptionEn, active: paymentMethod.active , image: paymentMethod.image, imagePath: paymentMethod.imagePath},
             }).then(response => {
-                console.log(response.data);
                 this.paymentMethod = response.data;
             });
         },
@@ -48,7 +47,7 @@ export const useConfigStore = defineStore('config', {
         // Nastavenie dopravného spôsobu
         async setShippingMethod(shippingMethod) {
             await axios.post(route('settings.eshop.shipping-method'), {
-                shippingMethod: {name: shippingMethod.name, id: shippingMethod.id, price: shippingMethod.price},
+                shippingMethod: {name: shippingMethod.name, id: shippingMethod.id, price: shippingMethod.price, nameEn: shippingMethod.nameEn, description: shippingMethod.description, descriptionEn: shippingMethod.descriptionEn, active: shippingMethod.active , image: shippingMethod.image, imagePath: shippingMethod.imagePath},
             }).then(response => {
                 this.shippingMethod = response.data;
             });

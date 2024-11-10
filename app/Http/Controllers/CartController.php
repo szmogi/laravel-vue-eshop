@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
 
 class CartController extends Controller
@@ -88,9 +89,30 @@ class CartController extends Controller
         if(!empty(Auth::id())) {
             $this->userId = Auth::id();
             $cart = session()->get('cart-'.$this->userId, []);
+            $cartCookies = json_decode(Cookie::get('cart-' . $this->userId, '[]'), true);
+
+            if(!empty($cartCookies) && empty($cart)) {
+                $cart = $cartCookies;
+            }
+
+            if(empty($cart)) {
+              $cart = session()->get('cart', []);
+
+              if(!empty($cart)) {
+                  Cookie::queue('cart-' . $this->userId, json_encode($cart), 60 * 24 * 30);
+                  session()->set('cart-'.$this->userId, $cart);
+              }
+            }
+
             return $cart;
         } else {
             $cart = session()->get('cart', []);
+            $cartCookies = json_decode(Cookie::get('cart', '[]'), true);
+
+            if(!empty($cartCookies) && empty($cart)) {
+                $cart = $cartCookies;
+            }
+
             return $cart;
         }
     }
@@ -105,8 +127,10 @@ class CartController extends Controller
         if(!empty(Auth::id())) {
             $this->userId = Auth::id();
             session()->put('cart-'.$this->userId, $this->cart);
+            Cookie::queue('cart-' . $this->userId, json_encode($this->cart), 60 * 24 * 30);
         } else {
             session()->put('cart', $this->cart);
+            Cookie::queue('cart', json_encode($this->cart), 60 * 24 * 30);
         }
     }
 
@@ -234,14 +258,27 @@ class CartController extends Controller
         $quantity = $request->input('quantity');
         $this->cart = $this->getCartContent();
 
+        if(!empty(Auth::id())) {
+            $this->userId = Auth::id();
+        }
+
         if($quantity > 0) {
             foreach ($this->cart['cart'] as $key => $item) {
                 if($item['product_id'] == $id) {
                     if($quantity > $this->cart['cart'][$key]['maxQuantity']) {
                         $quantity = $this->cart['cart'][$key]['maxQuantity'];
                     }
+
                     $this->cart['cart'][$key]['quantity'] = $quantity;
-                    session()->put('cart', $this->cart['cart']);
+
+                    if(!empty($this->userId)) {
+                        session()->put('cart-'.$this->userId, $this->cart['cart']);
+                        Cookie::queue('cart-' . $this->userId, json_encode($this->cart['cart']), 60 * 24 * 30);
+                    } else {
+                        session()->put('cart', $this->cart['cart']);
+                        Cookie::queue('cart', json_encode($this->cart['cart']), 60 * 24 * 30);
+                    }
+
                     $this->cart = $this->getCartContent();
                     return response()->json(['message' => 'Item quantity updated successfully!', 'status' => 'success','cart' => $this->cart]);
                 }

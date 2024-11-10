@@ -30,7 +30,7 @@ class OtherController extends Controller
     {
 
         $shippingRates = Config::where('key', 'eshop-shipping-method')->first();
-        if(!$shippingRates) {
+        if(empty($shippingRates->value)) {
             $shippingRates = $this->defaultShippingMethod();
         }
         return response()->json($shippingRates->value);
@@ -41,7 +41,7 @@ class OtherController extends Controller
     {
         $paymentMethods = Config::where('key', 'eshop-payment-method')->first();
 
-        if(!$paymentMethods) {
+        if(empty($paymentMethods->value)) {
             $paymentMethods = $this->defaultPaymentMethod();
         }
 
@@ -52,17 +52,36 @@ class OtherController extends Controller
     private function defaultPaymentMethod()
     {
         $paymentMethod = Config::where('key', 'eshop-payment-method')->first();
-        if(!$paymentMethod) {
+        if(empty($paymentMethod)) {
             $paymentMethod = Config::create([
                 'key' => 'eshop-payment-method',
                 'value' => [
                     [
                         'id' => 1,
                         'name' => 'PayPal',
+                        'nameEn' => 'PayPal',
+                        'image' => '/images/shipping/courier.png',
+                        'description' => '',
+                        'descriptionEn' => '',
+                        'active' => true,
                     ],
                     [
                         'id' => 2,
                         'name' => 'Credit Card',
+                        'nameEn' => 'Credit Card',
+                        'image' => '/images/shipping/card.png',
+                        'description' => '',
+                        'descriptionEn' => '',
+                        'active' => true,
+                    ],
+                    [
+                        'id' => 3,
+                        'name' => 'Bankový prevod',
+                        'nameEn' => 'Bank transfer',
+                        'image' => '/images/shipping/bank.png',
+                        'description' => 'Objednávka bude odoslaná po prijatej platby.',
+                        'descriptionEn' => 'The order will be shipped after payment is received.',
+                        'active' => true,
                     ],
                 ],
             ]);
@@ -73,19 +92,27 @@ class OtherController extends Controller
     private function defaultShippingMethod()
     {
         $shippingMethod = Config::where('key', 'eshop-shipping-method')->first();
-        if(!$shippingMethod) {
+        if(empty($shippingMethod)) {
             $shippingMethod = Config::create([
                 'key' => 'eshop-shipping-method',
                 'value' => [
                     [
                         'id' => 1,
-                        'name' => 'Standard Shipping',
-                        'price' => 10,
+                        'name' => 'Kurier',
+                        'price' => 5,
+                        'active' => true,
+                        'nameEn' => 'Courier',
+                        'description' => 'Dodanie do 24 hodín',
+                        'descriptionEn' => 'Delivery within 24 hours',
                     ],
                     [
                         'id' => 2,
-                        'name' => 'Express Shipping',
-                        'price' => 20,
+                        'name' => 'Osobný odber na predajni',
+                        'price' => 0,
+                        'active' => true,
+                        'nameEn' => 'Personal collection at the store',
+                        'description' => 'Dodanie do 24 hodín',
+                        'descriptionEn' => 'Delivery within 24 hours',
                     ],
                 ],
             ]);

@@ -85,7 +85,9 @@ class SettingsController extends Controller
         if(!empty($request->remove)) {
             foreach ($methods as $key => $value) {
                 if($value['id'] == $request->paymentMethod['id'] ) {
-                    unset($methods[$key]);
+                    if(!empty($value['custom'])) {
+                        unset($methods[$key]);
+                    }
                 }
             }
             $config->value = $methods;
@@ -97,13 +99,29 @@ class SettingsController extends Controller
             foreach ($methods as $key => $value) {
                 if($value['id'] == $request->paymentMethod['id'] ) {
                     $methods[$key]['name'] = $value['name'];
+                    $methods[$key]['nameEn'] = $value['nameEn'];
+                    $methods[$key]['description'] = $value['description'];
+                    $methods[$key]['descriptionEn'] = $value['descriptionEn'];
+                    $methods[$key]['active'] = $value['active'];
+
+                    if(!empty($request->paymentMethod['imagePath'])) {
+                        $methods[$key]['image'] = $request->paymentMethod['image'];
+                        $methods[$key]['imagePath'] = $request->paymentMethod['imagePath'];
+                    }
                     continue;
                 }
             }
         } else {
            $methods[] = [
                'name' => $request->paymentMethod['name'],
+               'nameEn' => $request->paymentMethod['nameEn'],
                'id' => count($methods) + 1,
+               'custom' => true,
+               'active' => true,
+               'description' => $request->paymentMethod['description'],
+               'descriptionEn' => $request->paymentMethod['descriptionEn'],
+               'image' => !empty($request->paymentMethod['image']) ? $request->paymentMethod['image'] : null,
+               'imagePath' => !empty($request->paymentMethod['imagePath']) ? $request->paymentMethod['imagePath'] : null,
            ];
         }
         $config->value = $methods;
@@ -120,7 +138,9 @@ class SettingsController extends Controller
         if(!empty($request->remove)) {
             foreach ($methods as $key => $value) {
                 if($value['id'] == $request->shippingMethod['id'] ) {
-                    unset($methods[$key]);
+                    if(!empty($value['custom'])) {
+                        unset($methods[$key]);
+                    }
                 }
             }
             $config->value = $methods;
@@ -133,14 +153,30 @@ class SettingsController extends Controller
                 if($value['id'] == $request->shippingMethod['id'] ) {
                     $methods[$key]['price'] = $value['price'];
                     $methods[$key]['name'] = $value['name'];
+                    $methods[$key]['nameEn'] = $value['nameEn'];
+                    $methods[$key]['description'] = $value['description'];
+                    $methods[$key]['descriptionEn'] = $value['descriptionEn'];
+                    $methods[$key]['active'] = $value['active'];
+
+                    if(!empty($request->shippingMethod['imagePath'])) {
+                        $methods[$key]['image'] = $request->shippingMethod['image'];
+                        $methods[$key]['imagePath'] = $request->shippingMethod['imagePath'];
+                    }
                     continue;
                 }
             }
         } else {
             $methods[] = [
                 'name' => $request->shippingMethod['name'],
+                'nameEn' => $request->shippingMethod['nameEn'],
                 'id' => count($methods) + 1,
                 'price' => $request->shippingMethod['price'],
+                'custom' => true,
+                'active' => true,
+                'description' => $request->shippingMethod['description'],
+                'descriptionEn' => $request->shippingMethod['descriptionEn'],
+                'image' => !empty($request->shippingMethod['image']) ? $request->shippingMethod['image'] : null,
+                'imagePath' => !empty($request->shippingMethod['imagePath']) ? $request->shippingMethod['imagePath'] : null,
             ];
         }
         $config->value = $methods;

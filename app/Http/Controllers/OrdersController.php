@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
 
 class OrdersController extends Controller
@@ -57,6 +58,15 @@ class OrdersController extends Controller
             }
 
             $this->order->updateOrder(['status' => 'completed']);
+
+            if(!empty($this->userId)) {
+                session()->destroy('cart-'.$this->userId);
+                Cookie::queue(Cookie::forget('cart-' . $this->userId));
+            } else {
+                Cookie::queue(Cookie::forget('cart'));
+                session()->destroy('cart');
+            }
+
             return response()->json(['success' => 'Order created successfully!', 'order' => $request->order, 'orderId' => $this->order->id]);
         }
 
@@ -75,7 +85,6 @@ class OrdersController extends Controller
     {
         $this->order = Order::with('items.product')->findOrFail($id);
         $this->order->data = json_decode($this->order->data);
-
         $json = $request->query('json');
 
         if(!empty($json)) {

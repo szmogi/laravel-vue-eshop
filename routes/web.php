@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\OtherController;
 use App\Http\Controllers\ProductsController;
@@ -55,6 +56,7 @@ Route::get('/orders', function () {
     return Inertia::render('/Orders/Orders');
 })->name('orders')->middleware('auth');
 
+// Orders
 Route::post('/order/add', [OrdersController::class, 'store'])->name('order.add');
 Route::get('/order/show/{id}', [OrdersController::class, 'show'])->name('order.show');
 Route::get('/order/status', [OrdersController::class, 'getStatusShow'])->name('order.status');
@@ -91,15 +93,21 @@ Route::get('/filter-content', [OtherController::class, 'getFilterContent'])->nam
 // Products filtered by parameters
 Route::get('/products-filtered', [ProductsController::class, 'filterProducts'])->name('products.filter');
 
+// Shipping rates
 Route::get('/shipping-rates', [OtherController::class, 'getShippingRates'])->name('shipping.rates');
+
+// Payment methods
 Route::get('/payment-methods', [OtherController::class, 'getPaymentMethods'])->name('payment.methods');
 
+// Settings
 Route::get('/settings/eshop', [SettingsController::class, 'view'])->name('settings.eshop')->middleware('auth');
 Route::post('/settings/eshop/vat', [SettingsController::class, 'settingsVat'])->name('settings.eshop.vat')->middleware('auth');
 Route::post('/settings/eshop/status', [SettingsController::class, 'settingsOrderStatus'])->name('settings.eshop.status')->middleware('auth');
 Route::post('/settings/eshop/payment-method', [SettingsController::class, 'settingsPaymentMethod'])->name('settings.eshop.payment-method')->middleware('auth');
 Route::post('/settings/eshop/shipping-method', [SettingsController::class, 'settingsShippingMethod'])->name('settings.eshop.shipping-method')->middleware('auth');
 
+// Upload
+Route::post('api/upload', [FileUploadController::class, 'upload']);
 
 Route::get('/api/proxy/exchangerate', function () {
     $response = file_get_contents('https://api.exchangerate-api.com/v4/latest/EUR?app_id='.env('VITE_API_KEY_RATE'));
