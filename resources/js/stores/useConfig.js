@@ -8,6 +8,7 @@ export const useConfigStore = defineStore('config', {
         paymentMethod: [],
         shippingMethod: [],
         eshop: [],
+        successResponse: false,
     }),
     actions: {
         // Nastavenie vat
@@ -16,6 +17,7 @@ export const useConfigStore = defineStore('config', {
                 vat: vat,
             }).then(response => {
                 this.vat = response.data.vat;
+                this.successResponse = true;
             });
 
         },
@@ -32,6 +34,7 @@ export const useConfigStore = defineStore('config', {
                 status: $sendStatus,
             }).then(response => {
                 this.status = response.data;
+                this.successResponse = true;
             });
         },
 
@@ -41,6 +44,7 @@ export const useConfigStore = defineStore('config', {
                 paymentMethod: {name: paymentMethod.name, id: paymentMethod.id , nameEn: paymentMethod.nameEn, description: paymentMethod.description, descriptionEn: paymentMethod.descriptionEn, active: paymentMethod.active , image: paymentMethod.image, imagePath: paymentMethod.imagePath},
             }).then(response => {
                 this.paymentMethod = response.data;
+                this.successResponse = true;
             });
         },
 
@@ -50,6 +54,7 @@ export const useConfigStore = defineStore('config', {
                 shippingMethod: {name: shippingMethod.name, id: shippingMethod.id, price: shippingMethod.price, nameEn: shippingMethod.nameEn, description: shippingMethod.description, descriptionEn: shippingMethod.descriptionEn, active: shippingMethod.active , image: shippingMethod.image, imagePath: shippingMethod.imagePath},
             }).then(response => {
                 this.shippingMethod = response.data;
+                this.successResponse = true;
             });
         },
 
@@ -60,6 +65,7 @@ export const useConfigStore = defineStore('config', {
                 remove: true,
             }).then(response => {
                 this.status = response.data;
+                this.successResponse = true;
             });
         },
 
@@ -70,6 +76,7 @@ export const useConfigStore = defineStore('config', {
                 remove: true,
             }).then(response => {
                 this.paymentMethod = response.data;
+                this.successResponse = true;
             });
         },
 
@@ -80,6 +87,7 @@ export const useConfigStore = defineStore('config', {
                 remove: true,
             }).then(response => {
                 this.shippingMethod = response.data;
+                this.successResponse = true;
             });
         },
 
@@ -87,6 +95,7 @@ export const useConfigStore = defineStore('config', {
         async getVat() {
             await axios.get(route('settings.eshop')).then(response => {
                 this.setVat(response.data.vat);
+                this.successResponse = true;
             });
         },
 
@@ -94,6 +103,7 @@ export const useConfigStore = defineStore('config', {
         async getStatus() {
             await axios.get(route('settings.eshop')).then(response => {
                 this.setStatus(response.data.status);
+                this.successResponse = true;
             });
         },
 
@@ -101,6 +111,7 @@ export const useConfigStore = defineStore('config', {
         async getPaymentMethod() {
             await axios.get(route('settings.eshop')).then(response => {
                 this.setPaymentMethod(response.data.paymentMethod);
+                this.successResponse = true;
             });
         },
 
@@ -108,6 +119,7 @@ export const useConfigStore = defineStore('config', {
         async getShippingMethod() {
             await axios.get(route('settings.eshop')).then(response => {
                 this.setShippingMethod(response.data.shippingMethod);
+                this.successResponse = true;
             });
         },
 

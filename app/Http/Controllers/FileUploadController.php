@@ -46,5 +46,18 @@ class FileUploadController extends Controller
             'id' => $fileRecord->id,
             'filepath' => $fileRecord->filepath,
         ]);
-    }  //
+    }
+
+    // Získa galériu obrázkov
+    public function getGallery()
+    {
+        //todo potom upravit
+        if(auth()->id() === 2) {
+            $files = File::all();
+        } else {
+            $files = File::where('user_id', auth()->id())->where('filename', '!=', 'default-product.jpg')->get();
+        }
+
+        return response()->json($files);
+    }
 }

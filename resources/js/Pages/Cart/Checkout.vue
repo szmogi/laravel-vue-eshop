@@ -352,29 +352,38 @@ watch(() => useOrder.orderId, () => {
                                     <path d="M5 13l4 4L19 7"/>
                                 </svg>
                             </div>
-                            <span>{{ rate.name }} - {{ rate.price }} EUR</span>
+                            <span class="flex flex-row items-center">
+                                <img class="w-6 h-6 mr-2" v-if="rate.image" :src="rate.imagePath" alt="rate.name" width="25" />
+                                {{ rate.name }} - {{ rate.price }} EUR</span>
                         </div>
                     </div>
 
                     <!-- Payment Method -->
                     <div class="mb-4">
                         <label for="payment" class="block text-gray-700 font-bold mb-2">{{ $t('paymentMethod') }}</label>
-                        <div @click="setPayMethode(method)" v-for="method in useCar.paymentMethods" :key="method.id" class="flex cursor-pointer items-center mb-2">
-                            <input
-                                type="radio"
-                                v-model="form.paymentMethod"
-                                :value="method"
-                                class="hidden peer"
-                                name="paymentMethod"
-                            />
-                            <!-- Custom checkbox -->
-                            <div class="w-4 mr-2 mb-0.5 h-4 border border-stone-400 rounded-md peer-checked:bg-ecoBlue peer-checked:border-ecoBlue flex items-center justify-center transition duration-200">
-                                <!-- Checkmark (conditionally shown) -->
-                                <svg class="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M5 13l4 4L19 7"/>
-                                </svg>
+                        <div v-for="method in useCar.paymentMethods" :key="method.id" >
+                           <div @click="setPayMethode(method)" class="flex cursor-pointer items-center mb-2" >
+                               <input
+                                   type="radio"
+                                   v-model="form.paymentMethod"
+                                   :value="method"
+                                   class="hidden peer"
+                                   name="paymentMethod"
+                               />
+                               <!-- Custom checkbox -->
+                               <div class="w-4 mr-2 mb-0.5 h-4 border border-stone-400 rounded-md peer-checked:bg-ecoBlue peer-checked:border-ecoBlue flex items-center justify-center transition duration-200">
+                                   <!-- Checkmark (conditionally shown) -->
+                                   <svg class="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                       <path d="M5 13l4 4L19 7"/>
+                                   </svg>
+                               </div>
+                               <span class="flex flex-row items-center">
+                                <img class="w-6 h-6 mr-2" v-if="method.image" :src="method.imagePath" alt="method.name" width="25" />
+                                {{ method.name }}</span>
+                           </div>
+                            <div v-if="method.active" class="text-sm mt-1.5 text-gray-600 dark:text-gray-400">
+                                {{ method.description }}
                             </div>
-                            <span>{{ method.name }}</span>
                         </div>
                        </div>
                       </div>

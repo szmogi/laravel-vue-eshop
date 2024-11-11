@@ -4,6 +4,7 @@ import { computed } from 'vue';
 import ProductList from '@/Pages/Products/ProductList.vue';
 import PageLayout from '@/Layouts/PageLayout.vue';
 import { useUserStore } from "@/stores/useUserStore.js";
+import { useUploadStore } from "@/stores/useUpload.js";
 import { useI18n } from 'vue-i18n';
 import ProductFilter from "@/Components/ProductFilter.vue";
 

@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { reactive , onBeforeMount , ref} from 'vue';
+import { reactive , onBeforeMount , ref , watch} from 'vue';
 import PageLayout from '@/Layouts/PageLayout.vue';
 import { useI18n } from 'vue-i18n';
 const { t, locale } = useI18n();
@@ -22,9 +22,6 @@ configStore.vat = props.vat ;
 configStore.status = props.status;
 configStore.paymentMethod = props.paymentMethod;
 configStore.shippingMethod = props.shippingMethod;
-
-console.log(props.shippingMethod);
-console.log(props.paymentMethod);
 
 const form = reactive({
     vat: configStore.vat ?? 0,
@@ -88,6 +85,13 @@ const handleUploadSuccess = (data, type) => {
 const handleUploadError = (error) => {
     console.error('Chyba pri nahrávaní obrázka:', error);
 };
+
+watch(() => configStore.successResponse, () => {
+    if(configStore.successResponse) {
+        configStore.successResponse = false;
+        uploadedFile.value = null;
+    }
+});
 
 </script>
 
@@ -229,7 +233,7 @@ const handleUploadError = (error) => {
                             <ul class="mt-4 w-full border-t-4 py-4">
                                 <li v-for="paymentMethod in configStore.paymentMethod" :key="paymentMethod.id" class="flex w-full justify-between flex-row py-0.5 items-center gap-2">
                                         <label class="ml-2 uppercase w-full flex justify-between flex-row" :for="paymentMethod.id">
-                                        <div class="flex flex-row items-center"><img v-if="paymentMethod.image" :src="paymentMethod.imagePath" alt="paymentMethod.name" width="50" />
+                                        <div class="flex flex-row items-center"><img class="mr-4" v-if="paymentMethod.image" :src="paymentMethod.imagePath" alt="paymentMethod.name" width="25" />
                                         {{ paymentMethod.name }}</div>
                                         <div><span @click="editPaymentMethod(paymentMethod)" class="edit-payment-method cursor-pointer">✏️</span>
                                         <span v-if="paymentMethod.custom" class="remove-payment-method cursor-pointer hover:text-red-500" @click="configStore.removePaymentMethod(paymentMethod)">x</span></div></label>
@@ -239,7 +243,7 @@ const handleUploadError = (error) => {
                     </form>
                 </div>
                 <div class="w-full mb-4">
-                    <form @submit.prevent="configStore.setShippingMethod(form.shippingMethod)" class="w-full mx-auto h-full  bg-white p-4 rounded-lg shadow-md">
+                    <form @submit.prevent="configStore.setShippingMethod(form.shippingMethod); form.shippingMethod = {}" class="w-full mx-auto h-full  bg-white p-4 rounded-lg shadow-md">
                         <h1 class="text-center text-2xl font-bold tracking-tight text-ecoBlue-dark sm:text-xl py-2">
                             {{ $t('settingsShippingMethod') }}
                         </h1>
@@ -292,7 +296,7 @@ const handleUploadError = (error) => {
                             <ul class="mt-4 w-full border-t-4 py-4">
                                 <li v-for="shippingMethod in configStore.shippingMethod" :key="shippingMethod.id" class="flex w-full justify-between flex-row py-0.5 items-center gap-2">
                                     <label class="ml-2 uppercase w-full flex justify-between flex-row" :for="shippingMethod.id">
-                                        <div class="flex flex-row items-center"><img v-if="shippingMethod.image" :src="shippingMethod.imagePath" alt="shippingMethod.name" width="50" />
+                                        <div class="flex flex-row items-center"><img class="mr-4" v-if="shippingMethod.image" :src="shippingMethod.imagePath" alt="shippingMethod.name" width="25" />
                                         {{ shippingMethod.name }} - €{{ shippingMethod.price }}</div>
                                         <div><span @click="editShippingMethod(shippingMethod)" class="edit-shipping-method cursor-pointer">✏️</span>
                                         <span v-if="shippingMethod.custom" class="remove-shipping-method cursor-pointer hover:text-red-500" @click="configStore.removeShippingMethod(shippingMethod)">x</span></div></label>

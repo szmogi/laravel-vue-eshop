@@ -107,7 +107,8 @@ Route::post('/settings/eshop/payment-method', [SettingsController::class, 'setti
 Route::post('/settings/eshop/shipping-method', [SettingsController::class, 'settingsShippingMethod'])->name('settings.eshop.shipping-method')->middleware('auth');
 
 // Upload
-Route::post('api/upload', [FileUploadController::class, 'upload']);
+Route::post('api/upload', [FileUploadController::class, 'upload'])->name('api.upload');
+Route::get('api/upload/gallery', [FileUploadController::class, 'getGallery'])->name('api.upload.gallery');
 
 Route::get('/api/proxy/exchangerate', function () {
     $response = file_get_contents('https://api.exchangerate-api.com/v4/latest/EUR?app_id='.env('VITE_API_KEY_RATE'));
