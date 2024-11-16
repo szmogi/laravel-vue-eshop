@@ -24,7 +24,7 @@ class SettingsController extends Controller
         $paymentMethod = Config::where('key', 'eshop-payment-method')->first();
         $shippingMethod = Config::where('key', 'eshop-shipping-method')->first();
 
-        return Inertia::render('Settings/eshop', [
+        return Inertia::render('Settings/Eshop', [
             'vat' => $vat ? $vat->value : env('SHOP_VAT'),
             'status' => !empty($status) ? $status->value : [],
             'paymentMethod' => !empty($paymentMethod) ? $paymentMethod->value : [],

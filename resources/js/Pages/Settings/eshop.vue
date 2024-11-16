@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import { reactive , onBeforeMount , ref , watch} from 'vue';
-import PageLayout from '@/Layouts/PageLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { useI18n } from 'vue-i18n';
 const { t, locale } = useI18n();
 import { useUserStore } from "@/Stores/useUserStore.js";
@@ -71,6 +71,7 @@ const editStatus = (status, index) => {
 const uploadedFile = ref(null);
 
 const handleUploadSuccess = (data, type) => {
+    data = data.data[0];
     uploadedFile.value = data;
 
     if(type === 'paymentMethod') {
@@ -97,15 +98,16 @@ watch(() => configStore.successResponse, () => {
 
 <template>
     <Head title="Settings" />
-    <PageLayout :visible-banner="false">
-    <div id="checkout" class="min-h-screen mt-24 bg-gray-100 dark:bg-gray-900">
-         <div class="flex flex-col py-12 w-10/12 mx-auto justify-start align-center">
-            <h1 class="text-center text-2xl font-bold tracking-tight text-ecoBlue-dark sm:text-4xl py-8">
+    <AppLayout title="Settings">
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ $t('SettingsEshop') }}
-            </h1>
-
+            </h2>
+        </template>
+    <div id="checkout" class="min-h-screen bg-gray-100 dark:bg-gray-900 container px-10 mx-auto">
+         <div class="flex flex-col py-12 w-10/12 mx-auto justify-start align-center">
             <div class="base-info-eshop">
-                <div class="flex flex-col justify-center items-center mt-8">
+                <div class="flex flex-col justify-center items-center">
                     <form @submit.prevent="configStore.setEsop(form.eshop)" class="w-full mx-auto bg-white p-4 rounded-lg shadow-md">
                         <div class="flex flex-col justify-between items-start">
                             <div class="mt-1 w-full flex flex-row items-start justify-start gap-2">
@@ -308,5 +310,5 @@ watch(() => configStore.successResponse, () => {
             </div>
         </div>
     </div>
-    </PageLayout>
+    </AppLayout>
 </template>

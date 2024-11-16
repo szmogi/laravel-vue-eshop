@@ -57,6 +57,34 @@ const logout = () => {
                             </div>
 
                             <!-- Navigation Links -->
+                            <div v-if="userStore.admin" class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                    {{ $t('products') }}
+                                </NavLink>
+                            </div>
+
+                            <!-- Navigation Links -->
+                            <div v-if="userStore.admin" class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                    {{ $t('simplePages') }}
+                                </NavLink>
+                            </div>
+
+                            <!-- Navigation Links -->
+                            <div v-if="userStore.admin" class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                    {{ $t('taxonomies') }}
+                                </NavLink>
+                            </div>
+
+                            <!-- Navigation Links -->
+                            <div v-if="userStore.admin" class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                    {{ $t('menu') }}
+                                </NavLink>
+                            </div>
+
+                            <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     {{ $t('orders') }}
@@ -157,7 +185,7 @@ const logout = () => {
                                         </DropdownLink>
 
                                         <DropdownLink v-if="userStore.admin" :href="route('settings.eshop')">
-                                           Settings Eshop
+                                           {{ $t('SettingsEshop') }}
                                         </DropdownLink>
 
 
