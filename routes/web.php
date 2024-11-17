@@ -99,12 +99,17 @@ Route::get('/shipping-rates', [OtherController::class, 'getShippingRates'])->nam
 // Payment methods
 Route::get('/payment-methods', [OtherController::class, 'getPaymentMethods'])->name('payment.methods');
 
+
+
 // Settings
 Route::get('/settings/eshop', [SettingsController::class, 'view'])->name('settings.eshop')->middleware('auth');
 Route::post('/settings/eshop/vat', [SettingsController::class, 'settingsVat'])->name('settings.eshop.vat')->middleware('auth');
 Route::post('/settings/eshop/status', [SettingsController::class, 'settingsOrderStatus'])->name('settings.eshop.status')->middleware('auth');
 Route::post('/settings/eshop/payment-method', [SettingsController::class, 'settingsPaymentMethod'])->name('settings.eshop.payment-method')->middleware('auth');
 Route::post('/settings/eshop/shipping-method', [SettingsController::class, 'settingsShippingMethod'])->name('settings.eshop.shipping-method')->middleware('auth');
+Route::get('/settings/products-list', [ProductsController::class, 'productsList'])->name('settings.products.list')->middleware('auth');
+Route::get('/settings/products/edit/{id}', [ProductsController::class, 'editProduct'])->name('settings.products.edit.insert')->middleware('auth');
+Route::get('/settings/products/master-id-list', [ProductsController::class, 'masterIdList'])->name('settings.products.master-id-list')->middleware('auth');
 
 // Upload
 Route::post('api/upload', [FileUploadController::class, 'upload'])->name('api.upload');

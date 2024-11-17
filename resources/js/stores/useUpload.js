@@ -30,12 +30,9 @@ export const useUploadStore = defineStore('upload', {
         // Získa obrázky
         async getImageGallery() {
             if(this.galleryStorage !== [] && this.galleryStorage !== null && this.galleryStorage !== '[]') {
-                console.log(this.galleryStorage.length);
                 this.imageGallery = JSON.parse(this.galleryStorage);
             } else {
-
                 await axios.get(route('api.upload.gallery')).then(response => {
-
                     localStorage.setItem('imageGallery', JSON.stringify(response.data), 'imageGallery', 60 * 24 * 30);
                     this.imageGallery = response.data;
                     this.successResponse = true;

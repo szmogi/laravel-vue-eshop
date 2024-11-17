@@ -35,7 +35,7 @@
             <div v-if="maxImages" class="text-red-500 font-bold">
                 {{ $t('maxLimitImages') }} : {{ maxImagesCount }}
             </div>
-            <div class="flex justify-content-end w-60 justify-between">
+            <div class="flex justify-content-end w-56 justify-between">
                 <Button :label="$t('exit')" icon="pi pi-times" @click="closeDialog" />
                 <Button :label="$t('confirm')" icon="pi pi-check" @click="confirmSelection" />
             </div>
@@ -106,13 +106,14 @@ const upload = async (event) => {
 const confirmSelection = ($event) => {
     if(props.multiSelectImage) {
         emit('upload-success', {
-            id: selectedImages.value[0].id,
-            filepath: selectedImages.value[0].filepath,
+            data: selectedImages.value,
         });
     } else {
-      emit('upload-success', {
-         data: selectedImages.value,
-      });
+        emit('upload-success', {
+            id: selectedImages.value[0].id,
+            filepath: selectedImages.value[0].filepath,
+            name: selectedImages.value[0].name,
+        });
     }
     // Vráti vybraný obrázok rodičovskej komponenty
     closeDialog();
@@ -137,7 +138,7 @@ const toggleSelection = (image) => {
             return;
         }
         maxImages.value = false;
-        selectedImages.value.push({ id: image.id, filepath: image.filepath });
+        selectedImages.value.push({ id: image.id, filepath: image.filepath , name: image.name });
     } else {
         selectedImages.value.splice(index, 1);
         if (selectedImages.value.length === 0) {

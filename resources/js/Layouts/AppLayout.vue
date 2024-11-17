@@ -58,7 +58,7 @@ const logout = () => {
 
                             <!-- Navigation Links -->
                             <div v-if="userStore.admin" class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                <NavLink :href="route('settings.products.list')" :active="route().current('settings.products.list')">
                                     {{ $t('products') }}
                                 </NavLink>
                             </div>

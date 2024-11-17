@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Inertia\Inertia;
 
 class ProductsController extends Controller
 {
@@ -110,7 +112,6 @@ class ProductsController extends Controller
             ->paginate(12);
 
         // Eager load the variants separately (not recommended due to multiple queries) and return
-
         return response()->json($this->returnProducts($products));
     }
 
@@ -134,6 +135,41 @@ class ProductsController extends Controller
         $results['count'] = $count;
         $results['products'] = $newProducts;
         return $results;
+    }
+
+    // Získaj zoznam produktov
+    public function productsList()
+    {
+        // Použi cache pre nekritické požiadavky
+        $products = Cache::remember('products_list', 3600, function () {
+            return Product::with('images', 'category', 'color', 'size', 'variants')->get();
+        });
+
+        return Inertia::render('Settings/ProductsList', [
+            'products' => $products,
+        ]);
+    }
+
+    public function getProductsList()
+    {
+        $products = Product::with('images', 'category', 'color', 'size','variants')->get();
+        return response()->json($products);
+    }
+
+    // editacia produktu alebo vytvorenie noveho
+    public function editProduct($id)
+    {
+        $product = Product::find($id);
+        return Inertia::render('Settings/ProductInsertOrEdit', [
+            'product' => $product,
+        ]);
+    }
+
+    // Získaj zoznam master id
+    public function masterIdList()
+    {
+        $masterIdList = Product::select('master_id')->distinct()->get();
+        return response()->json($masterIdList);
     }
 }
 
